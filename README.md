@@ -3,6 +3,6 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GoDoc](https://godoc.org/github.com/aacebo/jsonschema?status.svg)](https://pkg.go.dev/github.com/aacebo/jsonschema)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aacebo/jsonschema)](https://goreportcard.com/report/github.com/aacebo/jsonschema)
-[![Build Status](https://github.com/aacebo/jsonschema/actions/workflows/build.yaml/badge.svg?branch=master)](https://github.com/aacebo/jsonschema/actions/workflows/build.yaml)
+[![Build Status](https://github.com/aacebo/jsonschema/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/aacebo/jsonschema/actions/workflows/ci.yaml)
 
 a zero dependency jsonschema implementation
