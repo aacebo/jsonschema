@@ -6,3 +6,19 @@
 [![Build Status](https://github.com/aacebo/jsonschema/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/aacebo/jsonschema/actions/workflows/ci.yml)
 
 a zero dependency jsonschema implementation
+
+## CLI
+
+```bash
+$: jsonschema **/*
+```
+
+## Supported Drafts
+
+| Draft   | Status  |
+|---------|---------|
+| 4       | ⏳      |
+| 6       | ⏳      |
+| 7       | ⏳      |
+| 2019-09 | ⏳      |
+| 2020-12 | ⏳      |
