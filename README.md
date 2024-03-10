@@ -1,2 +1,2 @@
 # jsonschema
- a zero dependency jsonschema implementation
+a zero dependency jsonschema implementation
