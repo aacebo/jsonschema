@@ -103,18 +103,6 @@ func (self *namespace) Read(path string) (Schema, error) {
 	return schema, nil
 }
 
-// func (self *namespace) ReadDir(path string) ([]Schema, error) {
-// 	entries, err := os.ReadDir(path)
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	for _, entry := range entries {
-// 		os.
-// 	}
-// }
-
 func (self namespace) Compile(id string) []SchemaCompileError {
 	schema, ok := self.schemas[id]
 
