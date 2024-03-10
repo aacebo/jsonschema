@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"jsonschema/core"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/array#items
@@ -76,7 +77,7 @@ func parseArrayItems(data any) (*ArrayItems, error) {
 			m, ok := item.(map[string]any)
 
 			if !ok {
-				return nil, SchemaCompileError{
+				return nil, core.SchemaError{
 					Path:    fmt.Sprintf("items/%d", i),
 					Message: `must be a "Schema"`,
 				}

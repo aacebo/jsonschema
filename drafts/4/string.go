@@ -4,23 +4,21 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"jsonschema/core"
 	"reflect"
 	"regexp"
 )
 
-// https://json-schema.org/understanding-json-schema/reference/string#format
-type Formatter func(input string) error
-
 // https://json-schema.org/understanding-json-schema/reference/string
 type StringSchema struct {
-	ID          *string    `json:"$id,omitempty"`         // https://json-schema.org/understanding-json-schema/basics#declaring-a-unique-identifier
-	Type        SchemaType `json:"type"`                  // https://json-schema.org/understanding-json-schema/reference/type
-	Title       *string    `json:"title,omitempty"`       // https://json-schema.org/understanding-json-schema/reference/annotations
-	Description *string    `json:"description,omitempty"` // https://json-schema.org/understanding-json-schema/reference/annotations
-	Pattern     *string    `json:"pattern,omitempty"`     // https://json-schema.org/understanding-json-schema/reference/string#regexp
-	Format      *string    `json:"format,omitempty"`      // https://json-schema.org/understanding-json-schema/reference/string#format
-	MinLength   *int       `json:"minLength,omitempty"`   // https://json-schema.org/understanding-json-schema/reference/string#length
-	MaxLength   *int       `json:"maxLength,omitempty"`   // https://json-schema.org/understanding-json-schema/reference/string#length
+	ID          *string         `json:"$id,omitempty"`         // https://json-schema.org/understanding-json-schema/basics#declaring-a-unique-identifier
+	Type        core.SchemaType `json:"type"`                  // https://json-schema.org/understanding-json-schema/reference/type
+	Title       *string         `json:"title,omitempty"`       // https://json-schema.org/understanding-json-schema/reference/annotations
+	Description *string         `json:"description,omitempty"` // https://json-schema.org/understanding-json-schema/reference/annotations
+	Pattern     *string         `json:"pattern,omitempty"`     // https://json-schema.org/understanding-json-schema/reference/string#regexp
+	Format      *string         `json:"format,omitempty"`      // https://json-schema.org/understanding-json-schema/reference/string#format
+	MinLength   *int            `json:"minLength,omitempty"`   // https://json-schema.org/understanding-json-schema/reference/string#length
+	MaxLength   *int            `json:"maxLength,omitempty"`   // https://json-schema.org/understanding-json-schema/reference/string#length
 }
 
 func (self StringSchema) GetID() string {
@@ -31,7 +29,7 @@ func (self StringSchema) GetID() string {
 	return ""
 }
 
-func (self StringSchema) GetType() SchemaType {
+func (self StringSchema) GetType() core.SchemaType {
 	return self.Type
 }
 
@@ -40,18 +38,18 @@ func (self StringSchema) String() string {
 	return string(b)
 }
 
-func (self StringSchema) compile(ns namespace, path string, key string) []SchemaCompileError {
-	errors := []SchemaCompileError{}
+func (self StringSchema) compile(ns namespace, path string, key string) []core.SchemaError {
+	errors := []core.SchemaError{}
 
 	if key != "" {
 		path = fmt.Sprintf("%s/%s", path, key)
 	}
 
-	if self.Type != SCHEMA_TYPE_STRING {
-		errors = append(errors, SchemaCompileError{
+	if self.Type != core.SCHEMA_TYPE_STRING {
+		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "type",
-			Message: fmt.Sprintf(`"type" must be "%s"`, SCHEMA_TYPE_STRING),
+			Message: fmt.Sprintf(`"type" must be "%s"`, core.SCHEMA_TYPE_STRING),
 		})
 	}
 
@@ -59,7 +57,7 @@ func (self StringSchema) compile(ns namespace, path string, key string) []Schema
 		_, err := regexp.Compile(*self.Pattern)
 
 		if err != nil {
-			errors = append(errors, SchemaCompileError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "pattern",
 				Message: fmt.Sprintf(
@@ -72,7 +70,7 @@ func (self StringSchema) compile(ns namespace, path string, key string) []Schema
 
 	if self.Format != nil {
 		if !ns.HasFormat(*self.Format) {
-			errors = append(errors, SchemaCompileError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "format",
 				Message: fmt.Sprintf(
@@ -84,7 +82,7 @@ func (self StringSchema) compile(ns namespace, path string, key string) []Schema
 	}
 
 	if self.MinLength != nil && *self.MinLength < 0 {
-		errors = append(errors, SchemaCompileError{
+		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "minLength",
 			Message: `"minLength" must be non-negative`,
@@ -92,7 +90,7 @@ func (self StringSchema) compile(ns namespace, path string, key string) []Schema
 	}
 
 	if self.MaxLength != nil && *self.MaxLength < 0 {
-		errors = append(errors, SchemaCompileError{
+		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "maxLength",
 			Message: `"maxLength" must be non-negative`,
@@ -100,7 +98,7 @@ func (self StringSchema) compile(ns namespace, path string, key string) []Schema
 	}
 
 	if self.MinLength != nil && self.MaxLength != nil && *self.MaxLength < *self.MinLength {
-		errors = append(errors, SchemaCompileError{
+		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "maxLength",
 			Message: `"maxLength" must be greater than or equal to "minLength"`,
@@ -110,8 +108,8 @@ func (self StringSchema) compile(ns namespace, path string, key string) []Schema
 	return errors
 }
 
-func (self StringSchema) validate(ns namespace, path string, key string, value any) []SchemaError {
-	errors := []SchemaError{}
+func (self StringSchema) validate(ns namespace, path string, key string, value any) []core.SchemaError {
+	errors := []core.SchemaError{}
 	v := reflect.ValueOf(value)
 
 	if key != "" {
@@ -119,7 +117,7 @@ func (self StringSchema) validate(ns namespace, path string, key string, value a
 	}
 
 	if v.Kind() != reflect.String {
-		errors = append(errors, SchemaError{
+		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "type",
 			Message: `should be type "string"`,
@@ -132,7 +130,7 @@ func (self StringSchema) validate(ns namespace, path string, key string, value a
 		exists := regexp.MustCompile(*self.Pattern).MatchString(v.String())
 
 		if !exists {
-			errors = append(errors, SchemaError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "pattern",
 				Message: fmt.Sprintf(
@@ -146,7 +144,7 @@ func (self StringSchema) validate(ns namespace, path string, key string, value a
 
 	if self.Format != nil {
 		if err := ns.Format(*self.Format, v.String()); err != nil {
-			errors = append(errors, SchemaError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "format",
 				Message: err.Error(),
@@ -156,7 +154,7 @@ func (self StringSchema) validate(ns namespace, path string, key string, value a
 
 	if self.MinLength != nil {
 		if *self.MinLength > len(v.String()) {
-			errors = append(errors, SchemaError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "minLength",
 				Message: fmt.Sprintf(
@@ -170,7 +168,7 @@ func (self StringSchema) validate(ns namespace, path string, key string, value a
 
 	if self.MaxLength != nil {
 		if *self.MaxLength < len(v.String()) {
-			errors = append(errors, SchemaError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "maxLength",
 				Message: fmt.Sprintf(
@@ -186,7 +184,7 @@ func (self StringSchema) validate(ns namespace, path string, key string, value a
 }
 
 func parseString(data map[string]any) (StringSchema, error) {
-	self := StringSchema{Type: SCHEMA_TYPE_STRING}
+	self := StringSchema{Type: core.SCHEMA_TYPE_STRING}
 
 	if data == nil {
 		return self, errors.New(`cannot parse "null" to "StringSchema"`)

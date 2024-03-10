@@ -3,26 +3,14 @@ package jsonschema
 import (
 	"errors"
 	"fmt"
-)
-
-type SchemaType string
-
-const (
-	SCHEMA_TYPE_STRING  SchemaType = "string"
-	SCHEMA_TYPE_NUMBER  SchemaType = "number"
-	SCHEMA_TYPE_NULL    SchemaType = "null"
-	SCHEMA_TYPE_INTEGER SchemaType = "integer"
-	SCHEMA_TYPE_BOOLEAN SchemaType = "boolean"
-	SCHEMA_TYPE_ARRAY   SchemaType = "array"
-	SCHEMA_TYPE_OBJECT  SchemaType = "object"
+	"jsonschema/core"
 )
 
 type Schema interface {
-	GetID() string
-	GetType() SchemaType
+	core.Schema
 
-	compile(ns namespace, path string, key string) []SchemaCompileError
-	validate(ns namespace, path string, key string, value any) []SchemaError
+	compile(ns namespace, path string, key string) []core.SchemaError
+	validate(ns namespace, path string, key string, value any) []core.SchemaError
 }
 
 func parse(data map[string]any) (Schema, error) {
@@ -36,14 +24,14 @@ func parse(data map[string]any) (Schema, error) {
 		return nil, errors.New("schema type is required and must be a string")
 	}
 
-	switch SchemaType(t) {
-	case SCHEMA_TYPE_STRING:
+	switch core.SchemaType(t) {
+	case core.SCHEMA_TYPE_STRING:
 		return parseString(data)
-	case SCHEMA_TYPE_NUMBER:
+	case core.SCHEMA_TYPE_NUMBER:
 		return parseNumber(data)
-	case SCHEMA_TYPE_ARRAY:
+	case core.SCHEMA_TYPE_ARRAY:
 		return parseArray(data)
-	case SCHEMA_TYPE_NULL:
+	case core.SCHEMA_TYPE_NULL:
 		return parseNull(data)
 	}
 

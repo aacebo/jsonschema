@@ -4,21 +4,22 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"jsonschema/core"
 	"math"
 	"strconv"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/numeric
 type NumberSchema struct {
-	ID               *string    `json:"$id,omitempty"`              // https://json-schema.org/understanding-json-schema/basics#declaring-a-unique-identifier
-	Type             SchemaType `json:"type"`                       // https://json-schema.org/understanding-json-schema/reference/type
-	Title            *string    `json:"title,omitempty"`            // https://json-schema.org/understanding-json-schema/reference/annotations
-	Description      *string    `json:"description,omitempty"`      // https://json-schema.org/understanding-json-schema/reference/annotations
-	MultipleOf       *float64   `json:"multipleOf,omitempty"`       // https://json-schema.org/understanding-json-schema/reference/numeric#multiples
-	Minimum          *float64   `json:"minimum,omitempty"`          // https://json-schema.org/understanding-json-schema/reference/numeric#range
-	Maximum          *float64   `json:"maximum,omitempty"`          // https://json-schema.org/understanding-json-schema/reference/numeric#range
-	ExclusiveMinimum *bool      `json:"exclusiveMinimum,omitempty"` // https://json-schema.org/understanding-json-schema/reference/numeric#range
-	ExclusiveMaximum *bool      `json:"exclusiveMaximum,omitempty"` // https://json-schema.org/understanding-json-schema/reference/numeric#range
+	ID               *string         `json:"$id,omitempty"`              // https://json-schema.org/understanding-json-schema/basics#declaring-a-unique-identifier
+	Type             core.SchemaType `json:"type"`                       // https://json-schema.org/understanding-json-schema/reference/type
+	Title            *string         `json:"title,omitempty"`            // https://json-schema.org/understanding-json-schema/reference/annotations
+	Description      *string         `json:"description,omitempty"`      // https://json-schema.org/understanding-json-schema/reference/annotations
+	MultipleOf       *float64        `json:"multipleOf,omitempty"`       // https://json-schema.org/understanding-json-schema/reference/numeric#multiples
+	Minimum          *float64        `json:"minimum,omitempty"`          // https://json-schema.org/understanding-json-schema/reference/numeric#range
+	Maximum          *float64        `json:"maximum,omitempty"`          // https://json-schema.org/understanding-json-schema/reference/numeric#range
+	ExclusiveMinimum *bool           `json:"exclusiveMinimum,omitempty"` // https://json-schema.org/understanding-json-schema/reference/numeric#range
+	ExclusiveMaximum *bool           `json:"exclusiveMaximum,omitempty"` // https://json-schema.org/understanding-json-schema/reference/numeric#range
 }
 
 func (self NumberSchema) GetID() string {
@@ -29,7 +30,7 @@ func (self NumberSchema) GetID() string {
 	return ""
 }
 
-func (self NumberSchema) GetType() SchemaType {
+func (self NumberSchema) GetType() core.SchemaType {
 	return self.Type
 }
 
@@ -38,24 +39,24 @@ func (self NumberSchema) String() string {
 	return string(b)
 }
 
-func (self NumberSchema) compile(ns namespace, path string, key string) []SchemaCompileError {
-	errors := []SchemaCompileError{}
+func (self NumberSchema) compile(ns namespace, path string, key string) []core.SchemaError {
+	errors := []core.SchemaError{}
 
 	if key != "" {
 		path = fmt.Sprintf("%s/%s", path, key)
 	}
 
-	if self.Type != SCHEMA_TYPE_NUMBER {
-		errors = append(errors, SchemaCompileError{
+	if self.Type != core.SCHEMA_TYPE_NUMBER {
+		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "type",
-			Message: fmt.Sprintf(`"type" must be "%s"`, SCHEMA_TYPE_NUMBER),
+			Message: fmt.Sprintf(`"type" must be "%s"`, core.SCHEMA_TYPE_NUMBER),
 		})
 	}
 
 	if self.MultipleOf != nil {
 		if *self.MultipleOf < 0 {
-			errors = append(errors, SchemaCompileError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "multipleOf",
 				Message: fmt.Sprintf("must be non-negative"),
@@ -65,7 +66,7 @@ func (self NumberSchema) compile(ns namespace, path string, key string) []Schema
 
 	if self.Minimum != nil {
 		if *self.Minimum < 0 {
-			errors = append(errors, SchemaCompileError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "minimum",
 				Message: fmt.Sprintf("must be non-negative"),
@@ -75,7 +76,7 @@ func (self NumberSchema) compile(ns namespace, path string, key string) []Schema
 
 	if self.Maximum != nil {
 		if *self.Maximum < 0 {
-			errors = append(errors, SchemaCompileError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "maximum",
 				Message: fmt.Sprintf("must be non-negative"),
@@ -84,7 +85,7 @@ func (self NumberSchema) compile(ns namespace, path string, key string) []Schema
 	}
 
 	if self.Minimum != nil && self.Maximum != nil && *self.Minimum > *self.Maximum {
-		errors = append(errors, SchemaCompileError{
+		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "maximum",
 			Message: fmt.Sprintf(`must be greater than or equal to "minimum"`),
@@ -94,9 +95,9 @@ func (self NumberSchema) compile(ns namespace, path string, key string) []Schema
 	return errors
 }
 
-func (self NumberSchema) validate(ns namespace, path string, key string, value any) []SchemaError {
+func (self NumberSchema) validate(ns namespace, path string, key string, value any) []core.SchemaError {
 	var v float64
-	errors := []SchemaError{}
+	errors := []core.SchemaError{}
 
 	if key != "" {
 		path = fmt.Sprintf("%s/%s", path, key)
@@ -113,7 +114,7 @@ func (self NumberSchema) validate(ns namespace, path string, key string, value a
 		v = t
 		break
 	default:
-		errors = append(errors, SchemaError{
+		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "type",
 			Message: `should be type "number"`,
@@ -124,7 +125,7 @@ func (self NumberSchema) validate(ns namespace, path string, key string, value a
 
 	if self.MultipleOf != nil {
 		if math.Mod(v, *self.MultipleOf) != 0 {
-			errors = append(errors, SchemaError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "multipleOf",
 				Message: fmt.Sprintf(
@@ -144,7 +145,7 @@ func (self NumberSchema) validate(ns namespace, path string, key string, value a
 		}
 
 		if v < min {
-			errors = append(errors, SchemaError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "minimum",
 				Message: fmt.Sprintf(
@@ -164,7 +165,7 @@ func (self NumberSchema) validate(ns namespace, path string, key string, value a
 		}
 
 		if v > max {
-			errors = append(errors, SchemaError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "maximum",
 				Message: fmt.Sprintf(
@@ -180,7 +181,7 @@ func (self NumberSchema) validate(ns namespace, path string, key string, value a
 }
 
 func parseNumber(data map[string]any) (NumberSchema, error) {
-	self := NumberSchema{Type: SCHEMA_TYPE_NUMBER}
+	self := NumberSchema{Type: core.SCHEMA_TYPE_NUMBER}
 
 	if data == nil {
 		return self, errors.New(`cannot parse "null" to "NumberSchema"`)

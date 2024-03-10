@@ -4,19 +4,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"jsonschema/core"
 	"jsonschema/formats"
 	"os"
 )
 
 type namespace struct {
 	schemas map[string]Schema
-	formats map[string]Formatter
+	formats map[string]core.Formatter
 }
 
 func New() *namespace {
 	return &namespace{
 		schemas: map[string]Schema{},
-		formats: map[string]Formatter{
+		formats: map[string]core.Formatter{
 			"date-time": formats.DateTime,
 			"email":     formats.Email,
 			"ipv4":      formats.IPv4,
@@ -32,7 +33,7 @@ func (self namespace) HasFormat(name string) bool {
 	return ok
 }
 
-func (self *namespace) AddFormat(name string, format Formatter) *namespace {
+func (self *namespace) AddFormat(name string, format core.Formatter) *namespace {
 	self.formats[name] = format
 	return self
 }
@@ -103,7 +104,7 @@ func (self *namespace) Read(path string) (Schema, error) {
 	return schema, nil
 }
 
-func (self namespace) Compile(id string) []SchemaCompileError {
+func (self namespace) Compile(id string) []core.SchemaError {
 	schema, ok := self.schemas[id]
 
 	if !ok {
@@ -113,7 +114,7 @@ func (self namespace) Compile(id string) []SchemaCompileError {
 	return schema.compile(self, "", "")
 }
 
-func (self namespace) Validate(id string, value any) []SchemaError {
+func (self namespace) Validate(id string, value any) []core.SchemaError {
 	schema, ok := self.schemas[id]
 
 	if !ok {

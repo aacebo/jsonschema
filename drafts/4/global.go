@@ -1,5 +1,7 @@
 package jsonschema
 
+import "jsonschema/core"
+
 var global = New()
 
 func Read(path string) (Schema, error) {
@@ -18,10 +20,10 @@ func AddSchema(schema Schema) {
 	global.AddSchema(schema)
 }
 
-func Compile(id string) []SchemaCompileError {
+func Compile(id string) []core.SchemaError {
 	return global.Compile(id)
 }
 
-func Validate(id string, value any) []SchemaError {
+func Validate(id string, value any) []core.SchemaError {
 	return global.Validate(id, value)
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"jsonschema/core"
 	"reflect"
 	"strconv"
 )
@@ -11,7 +12,7 @@ import (
 // https://json-schema.org/understanding-json-schema/reference/array
 type ArraySchema struct {
 	ID              *string               `json:"$id,omitempty"`             // https://json-schema.org/understanding-json-schema/basics#declaring-a-unique-identifier
-	Type            SchemaType            `json:"type"`                      // https://json-schema.org/understanding-json-schema/reference/type
+	Type            core.SchemaType       `json:"type"`                      // https://json-schema.org/understanding-json-schema/reference/type
 	Title           *string               `json:"title,omitempty"`           // https://json-schema.org/understanding-json-schema/reference/annotations
 	Description     *string               `json:"description,omitempty"`     // https://json-schema.org/understanding-json-schema/reference/annotations
 	Items           *ArrayItems           `json:"items,omitempty"`           // https://json-schema.org/understanding-json-schema/reference/array#items
@@ -29,7 +30,7 @@ func (self ArraySchema) GetID() string {
 	return ""
 }
 
-func (self ArraySchema) GetType() SchemaType {
+func (self ArraySchema) GetType() core.SchemaType {
 	return self.Type
 }
 
@@ -38,18 +39,18 @@ func (self ArraySchema) String() string {
 	return string(b)
 }
 
-func (self ArraySchema) compile(ns namespace, path string, key string) []SchemaCompileError {
-	errors := []SchemaCompileError{}
+func (self ArraySchema) compile(ns namespace, path string, key string) []core.SchemaError {
+	errors := []core.SchemaError{}
 
 	if key != "" {
 		path = fmt.Sprintf("%s/%s", path, key)
 	}
 
-	if self.Type != SCHEMA_TYPE_ARRAY {
-		errors = append(errors, SchemaCompileError{
+	if self.Type != core.SCHEMA_TYPE_ARRAY {
+		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "type",
-			Message: fmt.Sprintf(`"type" must be "%s"`, SCHEMA_TYPE_ARRAY),
+			Message: fmt.Sprintf(`"type" must be "%s"`, core.SCHEMA_TYPE_ARRAY),
 		})
 	}
 
@@ -81,7 +82,7 @@ func (self ArraySchema) compile(ns namespace, path string, key string) []SchemaC
 
 	if self.MinItems != nil {
 		if *self.MinItems < 0 {
-			errors = append(errors, SchemaCompileError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "minItems",
 				Message: "must be non-negative",
@@ -91,7 +92,7 @@ func (self ArraySchema) compile(ns namespace, path string, key string) []SchemaC
 
 	if self.MaxItems != nil {
 		if *self.MaxItems < 0 {
-			errors = append(errors, SchemaCompileError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "maxItems",
 				Message: "must be non-negative",
@@ -100,7 +101,7 @@ func (self ArraySchema) compile(ns namespace, path string, key string) []SchemaC
 	}
 
 	if self.MinItems != nil && self.MaxItems != nil && *self.MaxItems < *self.MinItems {
-		errors = append(errors, SchemaCompileError{
+		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "maxItems",
 			Message: `must be greater than or equal to "minItems"`,
@@ -110,8 +111,8 @@ func (self ArraySchema) compile(ns namespace, path string, key string) []SchemaC
 	return errors
 }
 
-func (self ArraySchema) validate(ns namespace, path string, key string, value any) []SchemaError {
-	errors := []SchemaError{}
+func (self ArraySchema) validate(ns namespace, path string, key string, value any) []core.SchemaError {
+	errors := []core.SchemaError{}
 	v := reflect.ValueOf(value)
 
 	if key != "" {
@@ -119,7 +120,7 @@ func (self ArraySchema) validate(ns namespace, path string, key string, value an
 	}
 
 	if v.Kind() != reflect.Slice {
-		errors = append(errors, SchemaError{
+		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "type",
 			Message: `should be type "array"`,
@@ -142,7 +143,7 @@ func (self ArraySchema) validate(ns namespace, path string, key string, value an
 
 			if schema == nil {
 				if self.AdditionalItems == nil || (self.AdditionalItems.Bool != nil && !*self.AdditionalItems.Bool) {
-					errors = append(errors, SchemaError{
+					errors = append(errors, core.SchemaError{
 						Path:    fmt.Sprintf("%s/%s", path, strconv.Itoa(i)),
 						Keyword: "additionalItems",
 						Message: "undefined array index",
@@ -167,7 +168,7 @@ func (self ArraySchema) validate(ns namespace, path string, key string, value an
 
 	if self.MinItems != nil {
 		if *self.MinItems > v.Len() {
-			errors = append(errors, SchemaError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "minItems",
 				Message: fmt.Sprintf(
@@ -181,7 +182,7 @@ func (self ArraySchema) validate(ns namespace, path string, key string, value an
 
 	if self.MaxItems != nil {
 		if *self.MaxItems < v.Len() {
-			errors = append(errors, SchemaError{
+			errors = append(errors, core.SchemaError{
 				Path:    path,
 				Keyword: "maxItems",
 				Message: fmt.Sprintf(
@@ -201,7 +202,7 @@ func (self ArraySchema) validate(ns namespace, path string, key string, value an
 			_, ok := items[string(item)]
 
 			if ok {
-				errors = append(errors, SchemaError{
+				errors = append(errors, core.SchemaError{
 					Path:    fmt.Sprintf("%s/%d", path, i),
 					Keyword: "uniqueItems",
 					Message: "duplicate item",
@@ -216,7 +217,7 @@ func (self ArraySchema) validate(ns namespace, path string, key string, value an
 }
 
 func parseArray(data map[string]any) (ArraySchema, error) {
-	self := ArraySchema{Type: SCHEMA_TYPE_ARRAY}
+	self := ArraySchema{Type: core.SCHEMA_TYPE_ARRAY}
 
 	if data == nil {
 		return self, errors.New(`cannot parse "null" to "ArraySchema"`)

@@ -2,6 +2,7 @@ package jsonschema_test
 
 import (
 	"encoding/json"
+	"jsonschema/core"
 	jsonschema "jsonschema/drafts/4"
 	"testing"
 )
@@ -30,7 +31,7 @@ func TestArray(t *testing.T) {
 			t.FailNow()
 		}
 
-		if schema.GetType() != jsonschema.SCHEMA_TYPE_ARRAY {
+		if schema.GetType() != core.SCHEMA_TYPE_ARRAY {
 			t.Logf(`expected "number", received "%s"`, schema.GetType())
 			t.FailNow()
 		}

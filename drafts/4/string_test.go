@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"jsonschema/core"
 	jsonschema "jsonschema/drafts/4"
 	"regexp"
 	"testing"
@@ -33,7 +34,7 @@ func TestString(t *testing.T) {
 			t.FailNow()
 		}
 
-		if schema.GetType() != jsonschema.SCHEMA_TYPE_STRING {
+		if schema.GetType() != core.SCHEMA_TYPE_STRING {
 			t.Logf(`expected "string", received "%s"`, schema.GetType())
 			t.FailNow()
 		}
