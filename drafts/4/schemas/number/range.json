@@ -1,0 +1,12 @@
+{
+  "$id": "root",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "number",
+  "title": "range",
+  "description": "bounded number range",
+  "multipleOf": 10,
+  "minimum": 0,
+  "maximum": 100,
+  "exclusiveMinimum": false,
+  "exclusiveMaximum": false
+}

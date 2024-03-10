@@ -1,0 +1,90 @@
+package jsonschema
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+)
+
+// https://json-schema.org/understanding-json-schema/reference/null
+type NullSchema struct {
+	ID          *string    `json:"$id,omitempty"`         // https://json-schema.org/understanding-json-schema/basics#declaring-a-unique-identifier
+	Type        SchemaType `json:"type"`                  // https://json-schema.org/understanding-json-schema/reference/type
+	Title       *string    `json:"title,omitempty"`       // https://json-schema.org/understanding-json-schema/reference/annotations
+	Description *string    `json:"description,omitempty"` // https://json-schema.org/understanding-json-schema/reference/annotations
+}
+
+func (self NullSchema) GetID() string {
+	if self.ID != nil {
+		return *self.ID
+	}
+
+	return ""
+}
+
+func (self NullSchema) GetType() SchemaType {
+	return self.Type
+}
+
+func (self NullSchema) String() string {
+	b, _ := json.Marshal(self)
+	return string(b)
+}
+
+func (self NullSchema) compile(ns namespace, path string, key string) []SchemaCompileError {
+	errors := []SchemaCompileError{}
+
+	if key != "" {
+		path = fmt.Sprintf("%s/%s", path, key)
+	}
+
+	if self.Type != SCHEMA_TYPE_NULL {
+		errors = append(errors, SchemaCompileError{
+			Path:    path,
+			Keyword: "type",
+			Message: fmt.Sprintf(`"type" must be "%s"`, SCHEMA_TYPE_NULL),
+		})
+	}
+
+	return errors
+}
+
+func (self NullSchema) validate(ns namespace, path string, key string, value any) []SchemaError {
+	errors := []SchemaError{}
+
+	if key != "" {
+		path = fmt.Sprintf("%s/%s", path, key)
+	}
+
+	if value != nil {
+		errors = append(errors, SchemaError{
+			Path:    path,
+			Keyword: "type",
+			Message: fmt.Sprintf(`"type" must be "%s"`, SCHEMA_TYPE_NULL),
+		})
+	}
+
+	return errors
+}
+
+func parseNull(data map[string]any) (NullSchema, error) {
+	self := NullSchema{Type: SCHEMA_TYPE_NULL}
+
+	if data == nil {
+		return self, errors.New(`cannot parse "null" to "NullSchema"`)
+	}
+
+	if id, ok := data["$id"].(string); ok {
+		self.ID = &id
+	}
+
+	if title, ok := data["title"].(string); ok {
+		self.Title = &title
+	}
+
+	if description, ok := data["description"].(string); ok {
+		self.Description = &description
+	}
+
+	return self, nil
+}

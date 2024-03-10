@@ -1,0 +1,10 @@
+{
+  "$id": "root",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "string",
+  "title": "only numbers",
+  "description": "only numbers allowed",
+  "pattern": "^[0-9]*$",
+  "minLength": 0,
+  "maxLength": 100
+}
