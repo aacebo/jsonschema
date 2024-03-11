@@ -27,8 +27,8 @@ func (self NullSchema) GetType() core.SchemaType {
 	return self.Type
 }
 
-func (self NullSchema) Find(key string) (Schema, []Schema, map[string]Schema) {
-	return nil, nil, nil
+func (self NullSchema) Value() any {
+	return map[string]any{"type": "null"}
 }
 
 func (self NullSchema) String() string {
@@ -36,12 +36,8 @@ func (self NullSchema) String() string {
 	return string(b)
 }
 
-func (self NullSchema) compile(ns core.Namespace[Schema], path string, key string) []core.SchemaError {
+func (self NullSchema) compile(ns core.Namespace[Schema], id string, path string) []core.SchemaError {
 	errors := []core.SchemaError{}
-
-	if key != "" {
-		path = fmt.Sprintf("%s/%s", path, key)
-	}
 
 	if self.Type != core.SCHEMA_TYPE_NULL {
 		errors = append(errors, core.SchemaError{
@@ -54,12 +50,8 @@ func (self NullSchema) compile(ns core.Namespace[Schema], path string, key strin
 	return errors
 }
 
-func (self NullSchema) validate(ns core.Namespace[Schema], path string, key string, value any) []core.SchemaError {
+func (self NullSchema) validate(ns core.Namespace[Schema], id string, path string, value any) []core.SchemaError {
 	errors := []core.SchemaError{}
-
-	if key != "" {
-		path = fmt.Sprintf("%s/%s", path, key)
-	}
 
 	if value != nil {
 		errors = append(errors, core.SchemaError{

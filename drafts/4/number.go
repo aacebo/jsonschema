@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"jsonschema/core"
 	"math"
+	"reflect"
 	"strconv"
+	"strings"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/numeric
@@ -32,6 +34,34 @@ func (self NumberSchema) GetID() string {
 
 func (self NumberSchema) GetType() core.SchemaType {
 	return self.Type
+}
+
+func (self NumberSchema) Value() any {
+	value := reflect.ValueOf(self)
+	data := map[string]any{}
+
+	for i := 0; i < value.NumField(); i++ {
+		f := value.Field(i)
+		t := value.Type().Field(i)
+
+		if f.Kind() == reflect.Pointer || f.Kind() == reflect.Interface {
+			if f.IsNil() {
+				continue
+			}
+
+			f = f.Elem()
+		}
+
+		tag := strings.Split(t.Tag.Get("json"), ",")[0]
+
+		if tag == "" {
+			tag = t.Name
+		}
+
+		data[tag] = f.Interface()
+	}
+
+	return data
 }
 
 func (self NumberSchema) String() string {

@@ -13,6 +13,24 @@ type ArrayItems struct {
 	Many []Schema
 }
 
+func (self ArrayItems) Value() any {
+	if self.One != nil {
+		return self.One.Value()
+	}
+
+	if self.Many != nil {
+		values := []any{}
+
+		for _, value := range self.Many {
+			values = append(values, value.Value())
+		}
+
+		return values
+	}
+
+	return nil
+}
+
 func (self ArrayItems) MarshalJSON() ([]byte, error) {
 	var data []byte
 

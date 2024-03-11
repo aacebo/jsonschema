@@ -23,13 +23,13 @@ func parse(data map[string]any) (Schema, error) {
 		return RefSchema{ref}, nil
 	}
 
-	t, ok := data["type"].(string)
+	t, ok := data["type"]
 
 	if !ok {
 		return nil, errors.New("schema type is required and must be a string")
 	}
 
-	switch core.SchemaType(t) {
+	switch core.SchemaType(fmt.Sprint(t)) {
 	case core.SCHEMA_TYPE_STRING:
 		return parseString(data)
 	case core.SCHEMA_TYPE_NUMBER:

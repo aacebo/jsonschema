@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"jsonschema/core"
 	"reflect"
+	"strings"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/array
@@ -31,6 +32,41 @@ func (self ArraySchema) GetID() string {
 
 func (self ArraySchema) GetType() core.SchemaType {
 	return self.Type
+}
+
+func (self ArraySchema) Value() any {
+	value := reflect.ValueOf(self)
+	data := map[string]any{}
+
+	for i := 0; i < value.NumField(); i++ {
+		f := value.Field(i)
+		t := value.Type().Field(i)
+
+		if f.Kind() == reflect.Pointer || f.Kind() == reflect.Interface {
+			if f.IsNil() {
+				continue
+			}
+
+			f = f.Elem()
+		}
+
+		tag := strings.Split(t.Tag.Get("json"), ",")[0]
+
+		if tag == "" {
+			tag = t.Name
+		}
+
+		v := f.Interface()
+
+		if m := f.MethodByName("Value"); m.IsValid() {
+			out := m.Call([]reflect.Value{})
+			v = out[0].Interface()
+		}
+
+		data[tag] = v
+	}
+
+	return data
 }
 
 func (self ArraySchema) String() string {

@@ -11,6 +11,14 @@ type ArrayAdditionalItems struct {
 	Schema Schema
 }
 
+func (self ArrayAdditionalItems) Value() any {
+	if self.Bool != nil {
+		return *self.Bool
+	}
+
+	return self.Schema.Value()
+}
+
 func (self ArrayAdditionalItems) MarshalJSON() ([]byte, error) {
 	var data []byte
 

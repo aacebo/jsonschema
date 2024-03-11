@@ -16,4 +16,5 @@ const (
 type Schema interface {
 	GetID() string
 	GetType() SchemaType
+	Value() any
 }

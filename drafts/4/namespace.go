@@ -135,18 +135,7 @@ func (self *namespace) Resolve(url string, path string) (Schema, error) {
 
 	if path != "" {
 		parts := strings.Split(path, "/")
-		b, err := json.Marshal(schema)
-
-		if err != nil {
-			return nil, err
-		}
-
-		var curr any
-		err = json.Unmarshal(b, &curr)
-
-		if err != nil {
-			return nil, err
-		}
+		curr := schema.Value()
 
 		for _, part := range parts {
 			if part == "" || part == "#" {

@@ -20,6 +20,10 @@ func (self RefSchema) GetType() core.SchemaType {
 	return core.SCHEMA_TYPE_REF
 }
 
+func (self RefSchema) Value() any {
+	return map[string]any{"$ref": self.Path}
+}
+
 func (self RefSchema) String() string {
 	return self.Path
 }
