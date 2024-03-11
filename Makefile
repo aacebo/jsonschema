@@ -16,7 +16,7 @@ fmt:
 
 test:
 	go clean -testcache
-	go test ./... -cover -coverprofile=coverage.out -test.v
+	go test ./... -cover -coverprofile=coverage.out
 
 cov:
 	go tool cover -html=coverage.out

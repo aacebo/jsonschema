@@ -34,6 +34,22 @@ func (self ArraySchema) GetType() core.SchemaType {
 	return self.Type
 }
 
+func (self ArraySchema) GetTitle() string {
+	if self.Title != nil {
+		return *self.Title
+	}
+
+	return ""
+}
+
+func (self ArraySchema) GetDescription() string {
+	if self.Description != nil {
+		return *self.Description
+	}
+
+	return ""
+}
+
 func (self ArraySchema) Value() any {
 	value := reflect.ValueOf(self)
 	data := map[string]any{}

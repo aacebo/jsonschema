@@ -1,0 +1,8 @@
+{
+  "$id": "root",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "format/should_succeed_on_date_time",
+  "description": "should succeed on date time",
+  "type": "string",
+  "format": "date-time"
+}

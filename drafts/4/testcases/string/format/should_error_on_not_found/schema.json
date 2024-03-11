@@ -1,0 +1,8 @@
+{
+  "$id": "root",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "format/should_error_on_not_found",
+  "description": "should error on format not found",
+  "type": "string",
+  "format": "test"
+}

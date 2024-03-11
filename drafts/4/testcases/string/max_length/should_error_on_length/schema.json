@@ -1,0 +1,8 @@
+{
+  "$id": "root",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "max_length/should_error_on_length",
+  "description": "should error on length",
+  "type": "string",
+  "maxLength": 3
+}

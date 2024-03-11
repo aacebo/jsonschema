@@ -1,0 +1,8 @@
+{
+  "$id": "root",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "pattern/should_succeed_on_numeric",
+  "description": "should succeed on numeric pattern",
+  "type": "string",
+  "pattern": "^[0-9]*$"
+}

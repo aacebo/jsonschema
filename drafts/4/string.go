@@ -34,6 +34,22 @@ func (self StringSchema) GetType() core.SchemaType {
 	return self.Type
 }
 
+func (self StringSchema) GetTitle() string {
+	if self.Title != nil {
+		return *self.Title
+	}
+
+	return ""
+}
+
+func (self StringSchema) GetDescription() string {
+	if self.Description != nil {
+		return *self.Description
+	}
+
+	return ""
+}
+
 func (self StringSchema) Value() any {
 	value := reflect.ValueOf(self)
 	data := map[string]any{}
@@ -110,7 +126,7 @@ func (self StringSchema) compile(ns core.Namespace[Schema], id string, path stri
 		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "minLength",
-			Message: `"minLength" must be non-negative`,
+			Message: "must be non-negative",
 		})
 	}
 
@@ -118,7 +134,7 @@ func (self StringSchema) compile(ns core.Namespace[Schema], id string, path stri
 		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "maxLength",
-			Message: `"maxLength" must be non-negative`,
+			Message: "must be non-negative",
 		})
 	}
 
@@ -126,7 +142,7 @@ func (self StringSchema) compile(ns core.Namespace[Schema], id string, path stri
 		errors = append(errors, core.SchemaError{
 			Path:    path,
 			Keyword: "maxLength",
-			Message: `"maxLength" must be greater than or equal to "minLength"`,
+			Message: `must be greater than or equal to "minLength"`,
 		})
 	}
 
@@ -225,6 +241,10 @@ func parseString(data map[string]any) (StringSchema, error) {
 
 	if pattern, ok := data["pattern"].(string); ok {
 		self.Pattern = &pattern
+	}
+
+	if format, ok := data["format"].(string); ok {
+		self.Format = &format
 	}
 
 	if minLength, ok := data["minLength"].(float64); ok {

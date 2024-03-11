@@ -36,6 +36,22 @@ func (self NumberSchema) GetType() core.SchemaType {
 	return self.Type
 }
 
+func (self NumberSchema) GetTitle() string {
+	if self.Title != nil {
+		return *self.Title
+	}
+
+	return ""
+}
+
+func (self NumberSchema) GetDescription() string {
+	if self.Description != nil {
+		return *self.Description
+	}
+
+	return ""
+}
+
 func (self NumberSchema) Value() any {
 	value := reflect.ValueOf(self)
 	data := map[string]any{}

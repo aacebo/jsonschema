@@ -1,0 +1,8 @@
+{
+  "$id": "root",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "format/should_error_on_date_time",
+  "description": "should error on date time",
+  "type": "string",
+  "format": "date-time"
+}

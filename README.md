@@ -22,3 +22,10 @@ $: jsonschema **/*
 | 7       | ⏳      |
 | 2019-09 | ⏳      |
 | 2020-12 | ⏳      |
+
+## To Do
+
+- schema builder pattern
+- object schema
+- integer schema
+- export bundle

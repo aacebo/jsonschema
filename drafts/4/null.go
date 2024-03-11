@@ -27,6 +27,22 @@ func (self NullSchema) GetType() core.SchemaType {
 	return self.Type
 }
 
+func (self NullSchema) GetTitle() string {
+	if self.Title != nil {
+		return *self.Title
+	}
+
+	return ""
+}
+
+func (self NullSchema) GetDescription() string {
+	if self.Description != nil {
+		return *self.Description
+	}
+
+	return ""
+}
+
 func (self NullSchema) Value() any {
 	return map[string]any{"type": "null"}
 }
