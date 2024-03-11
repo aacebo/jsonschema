@@ -39,12 +39,8 @@ func (self NumberSchema) String() string {
 	return string(b)
 }
 
-func (self NumberSchema) compile(ns namespace, path string, key string) []core.SchemaError {
+func (self NumberSchema) compile(ns core.Namespace[Schema], id string, path string) []core.SchemaError {
 	errors := []core.SchemaError{}
-
-	if key != "" {
-		path = fmt.Sprintf("%s/%s", path, key)
-	}
 
 	if self.Type != core.SCHEMA_TYPE_NUMBER {
 		errors = append(errors, core.SchemaError{
@@ -95,13 +91,9 @@ func (self NumberSchema) compile(ns namespace, path string, key string) []core.S
 	return errors
 }
 
-func (self NumberSchema) validate(ns namespace, path string, key string, value any) []core.SchemaError {
+func (self NumberSchema) validate(ns core.Namespace[Schema], id string, path string, value any) []core.SchemaError {
 	var v float64
 	errors := []core.SchemaError{}
-
-	if key != "" {
-		path = fmt.Sprintf("%s/%s", path, key)
-	}
 
 	switch t := value.(type) {
 	case int:

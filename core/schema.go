@@ -10,6 +10,7 @@ const (
 	SCHEMA_TYPE_BOOLEAN SchemaType = "boolean"
 	SCHEMA_TYPE_ARRAY   SchemaType = "array"
 	SCHEMA_TYPE_OBJECT  SchemaType = "object"
+	SCHEMA_TYPE_REF     SchemaType = "reference"
 )
 
 type Schema interface {

@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"jsonschema/core"
 	"jsonschema/formats"
+	"net/http"
 	"os"
+	"strconv"
+	"strings"
 )
 
 type namespace struct {
@@ -33,7 +36,7 @@ func (self namespace) HasFormat(name string) bool {
 	return ok
 }
 
-func (self *namespace) AddFormat(name string, format core.Formatter) *namespace {
+func (self *namespace) AddFormat(name string, format core.Formatter) core.Namespace[Schema] {
 	self.formats[name] = format
 	return self
 }
@@ -63,7 +66,7 @@ func (self namespace) GetSchema(id string) Schema {
 	return schema
 }
 
-func (self *namespace) AddSchema(schema Schema) *namespace {
+func (self *namespace) AddSchema(schema Schema) core.Namespace[Schema] {
 	id := schema.GetID()
 
 	if id == "" {
@@ -104,7 +107,85 @@ func (self *namespace) Read(path string) (Schema, error) {
 	return schema, nil
 }
 
-func (self namespace) Compile(id string) []core.SchemaError {
+func (self *namespace) Resolve(url string, path string) (Schema, error) {
+	schema := self.GetSchema(url)
+
+	if schema == nil {
+		res, err := http.Get(url)
+
+		if err != nil {
+			return nil, err
+		}
+
+		data := map[string]any{}
+		err = json.NewDecoder(res.Body).Decode(&data)
+
+		if err != nil {
+			return nil, err
+		}
+
+		schema, err = parse(data)
+
+		if err != nil {
+			return nil, err
+		}
+
+		self.schemas[url] = schema
+	}
+
+	if path != "" {
+		parts := strings.Split(path, "/")
+		b, err := json.Marshal(schema)
+
+		if err != nil {
+			return nil, err
+		}
+
+		var curr any
+		err = json.Unmarshal(b, &curr)
+
+		if err != nil {
+			return nil, err
+		}
+
+		for _, part := range parts {
+			if part == "" || part == "#" {
+				continue
+			}
+
+			switch v := curr.(type) {
+			case map[string]any:
+				curr = v[part]
+				break
+			case []any:
+				i, err := strconv.Atoi(part)
+
+				if err != nil {
+					return nil, err
+				}
+
+				curr = v[i]
+				break
+			default:
+				curr = nil
+				break
+			}
+
+			if curr == nil {
+				return nil, errors.New(fmt.Sprintf(
+					`ref path "%s" not found`,
+					path,
+				))
+			}
+		}
+
+		return parse(curr.(map[string]any))
+	}
+
+	return schema, nil
+}
+
+func (self *namespace) Compile(id string) []core.SchemaError {
 	schema, ok := self.schemas[id]
 
 	if !ok {
@@ -114,7 +195,7 @@ func (self namespace) Compile(id string) []core.SchemaError {
 	return schema.compile(self, "", "")
 }
 
-func (self namespace) Validate(id string, value any) []core.SchemaError {
+func (self *namespace) Validate(id string, value any) []core.SchemaError {
 	schema, ok := self.schemas[id]
 
 	if !ok {

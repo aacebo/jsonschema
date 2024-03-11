@@ -8,14 +8,19 @@ import (
 
 type Schema interface {
 	core.Schema
-
-	compile(ns namespace, path string, key string) []core.SchemaError
-	validate(ns namespace, path string, key string, value any) []core.SchemaError
+	compile(ns core.Namespace[Schema], id string, path string) []core.SchemaError
+	validate(ns core.Namespace[Schema], id string, path string, value any) []core.SchemaError
 }
 
 func parse(data map[string]any) (Schema, error) {
 	if data == nil {
 		return nil, nil
+	}
+
+	ref, ok := data["$ref"].(string)
+
+	if ok {
+		return RefSchema{ref}, nil
 	}
 
 	t, ok := data["type"].(string)

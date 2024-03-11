@@ -1,0 +1,11 @@
+{
+  "$id": "root",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "title": "nested",
+  "description": "nested arrays",
+  "items": { "$ref": "#/additionalItems" },
+  "additionalItems": {
+    "type": "string"
+  }
+}

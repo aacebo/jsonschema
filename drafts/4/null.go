@@ -27,12 +27,16 @@ func (self NullSchema) GetType() core.SchemaType {
 	return self.Type
 }
 
+func (self NullSchema) Find(key string) (Schema, []Schema, map[string]Schema) {
+	return nil, nil, nil
+}
+
 func (self NullSchema) String() string {
 	b, _ := json.Marshal(self)
 	return string(b)
 }
 
-func (self NullSchema) compile(ns namespace, path string, key string) []core.SchemaError {
+func (self NullSchema) compile(ns core.Namespace[Schema], path string, key string) []core.SchemaError {
 	errors := []core.SchemaError{}
 
 	if key != "" {
@@ -50,7 +54,7 @@ func (self NullSchema) compile(ns namespace, path string, key string) []core.Sch
 	return errors
 }
 
-func (self NullSchema) validate(ns namespace, path string, key string, value any) []core.SchemaError {
+func (self NullSchema) validate(ns core.Namespace[Schema], path string, key string, value any) []core.SchemaError {
 	errors := []core.SchemaError{}
 
 	if key != "" {

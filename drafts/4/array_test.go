@@ -433,7 +433,7 @@ func TestArray(t *testing.T) {
 					t.FailNow()
 				}
 
-				if errs[0].Error() != `[/1/type] => should be type "string"` {
+				if errs[0].Error() != `[/items/1/type] => should be type "string"` {
 					t.Log(errs[0])
 					t.FailNow()
 				}
@@ -455,7 +455,7 @@ func TestArray(t *testing.T) {
 					t.FailNow()
 				}
 
-				if errs[0].Error() != `[/1/additionalItems] => undefined array index` {
+				if errs[0].Error() != `[/items/1/additionalItems] => undefined array index` {
 					t.Log(errs[0])
 					t.FailNow()
 				}
@@ -477,7 +477,7 @@ func TestArray(t *testing.T) {
 					t.FailNow()
 				}
 
-				if errs[0].Error() != `[/1/type] => should be type "number"` {
+				if errs[0].Error() != `[/items/1/type] => should be type "number"` {
 					t.Log(errs[0])
 					t.FailNow()
 				}

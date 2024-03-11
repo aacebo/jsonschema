@@ -38,12 +38,8 @@ func (self StringSchema) String() string {
 	return string(b)
 }
 
-func (self StringSchema) compile(ns namespace, path string, key string) []core.SchemaError {
+func (self StringSchema) compile(ns core.Namespace[Schema], id string, path string) []core.SchemaError {
 	errors := []core.SchemaError{}
-
-	if key != "" {
-		path = fmt.Sprintf("%s/%s", path, key)
-	}
 
 	if self.Type != core.SCHEMA_TYPE_STRING {
 		errors = append(errors, core.SchemaError{
@@ -108,13 +104,9 @@ func (self StringSchema) compile(ns namespace, path string, key string) []core.S
 	return errors
 }
 
-func (self StringSchema) validate(ns namespace, path string, key string, value any) []core.SchemaError {
+func (self StringSchema) validate(ns core.Namespace[Schema], id string, path string, value any) []core.SchemaError {
 	errors := []core.SchemaError{}
 	v := reflect.ValueOf(value)
-
-	if key != "" {
-		path = fmt.Sprintf("%s/%s", path, key)
-	}
 
 	if v.Kind() != reflect.String {
 		errors = append(errors, core.SchemaError{

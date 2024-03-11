@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"jsonschema/core"
 	"reflect"
-	"strconv"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/array
@@ -39,11 +38,11 @@ func (self ArraySchema) String() string {
 	return string(b)
 }
 
-func (self ArraySchema) compile(ns namespace, path string, key string) []core.SchemaError {
+func (self ArraySchema) compile(ns core.Namespace[Schema], id string, path string) []core.SchemaError {
 	errors := []core.SchemaError{}
 
-	if key != "" {
-		path = fmt.Sprintf("%s/%s", path, key)
+	if self.ID != nil && *self.ID != "" {
+		id = *self.ID
 	}
 
 	if self.Type != core.SCHEMA_TYPE_ARRAY {
@@ -56,14 +55,14 @@ func (self ArraySchema) compile(ns namespace, path string, key string) []core.Sc
 
 	if self.Items != nil {
 		if self.Items.One != nil {
-			if errs := self.Items.One.compile(ns, path, "items"); len(errs) > 0 {
+			if errs := self.Items.One.compile(ns, id, path+"/items"); len(errs) > 0 {
 				errors = append(errors, errs...)
 			}
 		}
 
 		if self.Items.Many != nil {
 			for i, schema := range self.Items.Many {
-				if errs := schema.compile(ns, path, fmt.Sprintf("items/%d", i)); len(errs) > 0 {
+				if errs := schema.compile(ns, id, fmt.Sprintf("%s/items/%d", path, i)); len(errs) > 0 {
 					errors = append(errors, errs...)
 				}
 			}
@@ -72,7 +71,7 @@ func (self ArraySchema) compile(ns namespace, path string, key string) []core.Sc
 
 	if self.AdditionalItems != nil {
 		if self.AdditionalItems.Schema != nil {
-			errs := self.AdditionalItems.Schema.compile(ns, path, "additionalItems")
+			errs := self.AdditionalItems.Schema.compile(ns, id, path+"/additionalItems")
 
 			if len(errs) > 0 {
 				errors = append(errors, errs...)
@@ -111,12 +110,12 @@ func (self ArraySchema) compile(ns namespace, path string, key string) []core.Sc
 	return errors
 }
 
-func (self ArraySchema) validate(ns namespace, path string, key string, value any) []core.SchemaError {
+func (self ArraySchema) validate(ns core.Namespace[Schema], id string, path string, value any) []core.SchemaError {
 	errors := []core.SchemaError{}
 	v := reflect.ValueOf(value)
 
-	if key != "" {
-		path = fmt.Sprintf("%s/%s", path, key)
+	if self.ID != nil && *self.ID != "" {
+		id = *self.ID
 	}
 
 	if v.Kind() != reflect.Slice {
@@ -144,7 +143,7 @@ func (self ArraySchema) validate(ns namespace, path string, key string, value an
 			if schema == nil {
 				if self.AdditionalItems == nil || (self.AdditionalItems.Bool != nil && !*self.AdditionalItems.Bool) {
 					errors = append(errors, core.SchemaError{
-						Path:    fmt.Sprintf("%s/%s", path, strconv.Itoa(i)),
+						Path:    fmt.Sprintf("%s/items/%d", path, i),
 						Keyword: "additionalItems",
 						Message: "undefined array index",
 					})
@@ -154,8 +153,8 @@ func (self ArraySchema) validate(ns namespace, path string, key string, value an
 			if schema != nil {
 				errs := schema.validate(
 					ns,
-					path,
-					strconv.Itoa(i),
+					id,
+					fmt.Sprintf("%s/items/%d", path, i),
 					v.Index(i).Interface(),
 				)
 
