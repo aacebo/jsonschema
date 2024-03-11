@@ -3,7 +3,7 @@ clean:
 	rm coverage.out
 
 build:
-	go build -o bin/main ./
+	go build -o bin/cmd ./cmd
 	go build -o bin/4 ./drafts/4
 
 clean_build: clean build
