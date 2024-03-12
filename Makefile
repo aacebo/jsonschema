@@ -19,7 +19,6 @@ test:
 	go clean -testcache
 	go test ./... -cover -coverprofile=coverage.out
 
-.PHONY: test
 test.v:
 	go clean -testcache
 	go test ./... -cover -coverprofile=coverage.out -v
