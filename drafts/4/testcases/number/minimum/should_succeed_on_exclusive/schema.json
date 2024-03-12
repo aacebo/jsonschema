@@ -2,7 +2,6 @@
   "$id": "/number/minimum/should_succeed_on_exclusive",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "number",
-  "title": "minimum/should_succeed_on_exclusive",
   "description": "should error on exclusive",
   "minimum": 10,
   "exclusiveMinimum": true

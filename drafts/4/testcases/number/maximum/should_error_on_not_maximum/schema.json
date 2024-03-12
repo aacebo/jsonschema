@@ -2,7 +2,6 @@
   "$id": "/number/maximum/should_error_on_not_maximum",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "number",
-  "title": "maximum/should_error_on_not_maximum",
   "description": "should error on not maximum",
   "maximum": 9
 }

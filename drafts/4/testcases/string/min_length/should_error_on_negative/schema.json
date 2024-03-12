@@ -1,7 +1,6 @@
 {
   "$id": "/string/min_length/should_error_on_negative",
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "min_length/should_error_on_negative",
   "description": "should error on negative",
   "type": "string",
   "minLength": -1

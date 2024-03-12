@@ -2,7 +2,6 @@
   "$id": "/number/maximum/should_succeed_on_maximum",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "number",
-  "title": "maximum/should_succeed_on_maximum",
   "description": "should succeed on maximum",
   "maximum": 20
 }

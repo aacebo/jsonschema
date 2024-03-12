@@ -1,7 +1,6 @@
 {
   "$id": "/string/max_length/should_error_on_lt_min_length",
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "max_length/should_error_on_lt_min_length",
   "description": "should error on less than min length",
   "type": "string",
   "minLength": 5,

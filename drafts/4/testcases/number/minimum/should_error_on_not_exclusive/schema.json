@@ -2,7 +2,6 @@
   "$id": "/number/minimum/should_error_on_not_exclusive",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "number",
-  "title": "minimum/should_error_on_not_exclusive",
   "description": "should error on not exclusive",
   "minimum": 10,
   "exclusiveMinimum": true

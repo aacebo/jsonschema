@@ -1,7 +1,6 @@
 {
   "$id": "/string/max_length/should_succeed",
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "max_length/should_succeed",
   "description": "should succeed",
   "type": "string",
   "maxLength": 4

@@ -2,7 +2,6 @@
   "$id": "/ref/should_error_on_bad_type_local",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "array",
-  "title": "should_error_on_bad_type_local",
   "description": "should error on bad type local",
   "items": { "$ref": "#/additionalItems" },
   "additionalItems": {

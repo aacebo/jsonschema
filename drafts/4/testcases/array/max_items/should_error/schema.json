@@ -2,7 +2,6 @@
   "$id": "/array/max_items/should_error",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "array",
-  "title": "max_items/should_error",
   "description": "should error",
   "items": {
     "type": "string"

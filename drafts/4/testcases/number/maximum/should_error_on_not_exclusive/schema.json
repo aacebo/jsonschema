@@ -2,7 +2,6 @@
   "$id": "/number/maximum/should_error_on_not_exclusive",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "number",
-  "title": "maximum/should_error_on_not_exclusive",
   "description": "should error on not exclusive",
   "maximum": 10,
   "exclusiveMaximum": true

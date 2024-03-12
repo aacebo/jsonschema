@@ -2,7 +2,6 @@
   "$id": "/ref/should_succeed_on_local",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "array",
-  "title": "should_succeed_on_local",
   "description": "should succeed on local",
   "items": { "$ref": "#/additionalItems" },
   "additionalItems": {

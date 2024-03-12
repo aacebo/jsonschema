@@ -2,6 +2,5 @@
   "$id": "/null/should_succeed_on_null",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "null",
-  "title": "should_succeed_on_null",
   "description": "should succeed on null"
 }
