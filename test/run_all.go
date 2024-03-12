@@ -6,6 +6,7 @@ import (
 	"jsonschema/core"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -17,9 +18,22 @@ func RunAll[T core.Schema](path string, ns core.Namespace[T], t *testing.T) {
 	}
 
 	for _, testcase := range cases {
-		t.Run(testcase.Schema.GetTitle(), func(t *testing.T) {
+		id := testcase.Schema.GetID()
+
+		if id == "" {
+			t.Log(testcase.Schema)
+			t.Error(`test schemas "id" is required`)
+		}
+
+		title := id
+
+		if strings.HasPrefix(title, "/") {
+			title = title[1:]
+		}
+
+		t.Run(title, func(t *testing.T) {
 			ns := ns.AddSchema(testcase.Schema.(T))
-			errs := ns.Compile(testcase.Schema.GetID())
+			errs := ns.Compile(id)
 
 			if len(errs) > 0 {
 				if fmt.Sprint(testcase.Errors) != fmt.Sprint(errs) {
@@ -31,7 +45,7 @@ func RunAll[T core.Schema](path string, ns core.Namespace[T], t *testing.T) {
 				return
 			}
 
-			errs = ns.Validate(testcase.Schema.GetID(), testcase.Input)
+			errs = ns.Validate(id, testcase.Input)
 
 			if fmt.Sprint(testcase.Errors) != fmt.Sprint(errs) {
 				t.Log(testcase.Schema)
