@@ -14,6 +14,7 @@ run:
 fmt:
 	gofmt -w ./
 
+.PHONY: test
 test:
 	go clean -testcache
 	go test ./... -cover -coverprofile=coverage.out
