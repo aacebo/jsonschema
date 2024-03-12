@@ -29,3 +29,7 @@ $: jsonschema **/*
 - object schema
 - integer schema
 - export bundle
+- enums
+- `$def` keyword
+- change `$ref` from schema to keyword
+    - props on `$ref` should extend referenced schema
