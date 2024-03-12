@@ -88,7 +88,7 @@ func (self *namespace) Read(path string) (Schema, error) {
 
 	schema, err := parse(data)
 
-	if err != nil {
+	if err != nil || schema == nil {
 		return nil, err
 	}
 
