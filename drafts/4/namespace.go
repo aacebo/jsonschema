@@ -68,11 +68,6 @@ func (self namespace) GetSchema(id string) Schema {
 
 func (self *namespace) AddSchema(schema Schema) core.Namespace[Schema] {
 	id := schema.GetID()
-
-	if id == "" {
-		panic(`"$id" is required for top level schemas`)
-	}
-
 	self.schemas[id] = schema
 	return self
 }
@@ -98,11 +93,6 @@ func (self *namespace) Read(path string) (Schema, error) {
 	}
 
 	id := schema.GetID()
-
-	if id == "" {
-		return nil, errors.New(`"$id" is required for top level schemas`)
-	}
-
 	self.schemas[id] = schema
 	return schema, nil
 }
