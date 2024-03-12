@@ -6,7 +6,6 @@ import (
 	"jsonschema/core"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -22,11 +21,10 @@ func RunAll[T core.Schema](path string, ns core.Namespace[T], t *testing.T) {
 			ns := ns.AddSchema(testcase.Schema.(T))
 			errs := ns.Compile(testcase.Schema.GetID())
 
-			t.Log(testcase.Schema)
-			t.Logf(`expected: "%v"`, testcase.Errors)
-
 			if len(errs) > 0 {
 				if fmt.Sprint(testcase.Errors) != fmt.Sprint(errs) {
+					t.Log(testcase.Schema)
+					t.Logf(`expected: "%v"`, testcase.Errors)
 					t.Errorf(`received: "%v"`, errs)
 				}
 
@@ -36,6 +34,8 @@ func RunAll[T core.Schema](path string, ns core.Namespace[T], t *testing.T) {
 			errs = ns.Validate(testcase.Schema.GetID(), testcase.Input)
 
 			if fmt.Sprint(testcase.Errors) != fmt.Sprint(errs) {
+				t.Log(testcase.Schema)
+				t.Logf(`expected: "%v"`, testcase.Errors)
 				t.Errorf(`received: "%v"`, errs)
 			}
 		})
@@ -49,19 +49,30 @@ func readAll[T core.Schema](path string, ns core.Namespace[T]) ([]Case, error) {
 			schema, err := ns.Read(filepath.Join(path, "schema.json"))
 
 			if err != nil {
-				return nil
+				if os.IsNotExist(err) {
+					return nil
+				}
+
+				return err
 			}
 
-			input, err := os.ReadFile(filepath.Join(path, "input.txt"))
+			var input any
+			input, err = os.ReadFile(filepath.Join(path, "input.json"))
 
 			if err != nil {
-				return nil
+				return err
+			}
+
+			err = json.Unmarshal(input.([]byte), &input)
+
+			if err != nil {
+				return err
 			}
 
 			text, err := os.ReadFile(filepath.Join(path, "errors.json"))
 
 			if err != nil {
-				if err != os.ErrNotExist {
+				if !os.IsNotExist(err) {
 					return nil
 				}
 			}
@@ -72,13 +83,14 @@ func readAll[T core.Schema](path string, ns core.Namespace[T]) ([]Case, error) {
 				err := json.Unmarshal(text, &errors)
 
 				if err != nil {
+					fmt.Println("d", path)
 					return err
 				}
 			}
 
 			cases = append(cases, Case{
 				Schema: schema,
-				Input:  strings.TrimSpace(string(input)),
+				Input:  input,
 				Errors: errors,
 			})
 		}

@@ -1,5 +1,5 @@
 {
-  "$id": "root",
+  "$id": "/string/pattern/should_error_on_bad_pattern",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "pattern/should_error_on_bad_pattern",
   "description": "should error on bad pattern",

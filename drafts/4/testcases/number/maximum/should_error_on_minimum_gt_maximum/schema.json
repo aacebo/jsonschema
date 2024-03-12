@@ -1,0 +1,9 @@
+{
+  "$id": "/number/maximum/should_error_on_minimum_gt_maximum",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "number",
+  "title": "maximum/should_error_on_minimum_gt_maximum",
+  "description": "should error on minimum greater than maximum",
+  "minimum": 10,
+  "maximum": 9
+}

@@ -1,0 +1,11 @@
+{
+  "$id": "/array/max_items/should_succeed",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "title": "max_items/should_succeed",
+  "description": "should succeed",
+  "items": {
+    "type": "string"
+  },
+  "maxItems": 2
+}

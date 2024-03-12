@@ -1,0 +1,15 @@
+{
+  "$id": "/array/items/should_error_on_multiple",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "title": "items/should_error_on_multiple",
+  "description": "should error on multiple",
+  "items": [
+    {
+      "type": "number"
+    },
+    {
+      "type": "string"
+    }
+  ]
+}

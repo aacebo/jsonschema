@@ -254,7 +254,7 @@ func (self ArraySchema) validate(ns core.Namespace[Schema], id string, path stri
 
 			if ok {
 				errors = append(errors, core.SchemaError{
-					Path:    fmt.Sprintf("%s/%d", path, i),
+					Path:    fmt.Sprintf("%s/items/%d", path, i),
 					Keyword: "uniqueItems",
 					Message: "duplicate item",
 				})
@@ -300,7 +300,7 @@ func parseArray(data map[string]any) (ArraySchema, error) {
 		parsed, err := parseArrayAdditionalItems(additionalItems)
 
 		if err != nil {
-			return self, nil
+			return self, err
 		}
 
 		self.AdditionalItems = parsed
@@ -313,7 +313,7 @@ func parseArray(data map[string]any) (ArraySchema, error) {
 
 	if maxItems, ok := data["maxItems"].(float64); ok {
 		v := int(maxItems)
-		self.MinItems = &v
+		self.MaxItems = &v
 	}
 
 	if uniqueItems, ok := data["uniqueItems"].(bool); ok {

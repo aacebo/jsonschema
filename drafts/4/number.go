@@ -106,26 +106,6 @@ func (self NumberSchema) compile(ns core.Namespace[Schema], id string, path stri
 		}
 	}
 
-	if self.Minimum != nil {
-		if *self.Minimum < 0 {
-			errors = append(errors, core.SchemaError{
-				Path:    path,
-				Keyword: "minimum",
-				Message: fmt.Sprintf("must be non-negative"),
-			})
-		}
-	}
-
-	if self.Maximum != nil {
-		if *self.Maximum < 0 {
-			errors = append(errors, core.SchemaError{
-				Path:    path,
-				Keyword: "maximum",
-				Message: fmt.Sprintf("must be non-negative"),
-			})
-		}
-	}
-
 	if self.Minimum != nil && self.Maximum != nil && *self.Minimum > *self.Maximum {
 		errors = append(errors, core.SchemaError{
 			Path:    path,

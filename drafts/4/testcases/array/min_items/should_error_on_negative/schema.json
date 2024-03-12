@@ -1,0 +1,11 @@
+{
+  "$id": "/array/min_items/should_error_on_negative",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "title": "min_items/should_error_on_negative",
+  "description": "should error",
+  "items": {
+    "type": "string"
+  },
+  "minItems": -1
+}

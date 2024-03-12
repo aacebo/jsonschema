@@ -1,0 +1,10 @@
+{
+  "$id": "/array/items/should_succeed_on_single",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "title": "items/should_succeed_on_single",
+  "description": "should succeed on single",
+  "items": {
+    "type": "number"
+  }
+}

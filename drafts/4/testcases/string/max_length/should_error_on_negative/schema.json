@@ -1,5 +1,5 @@
 {
-  "$id": "root",
+  "$id": "/string/max_length/should_error_on_negative",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "max_length/should_error_on_negative",
   "description": "should error on negative",

@@ -1,5 +1,5 @@
 {
-  "$id": "root",
+  "$id": "/string/min_length/should_succeed",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "min_length/should_succeed",
   "description": "should succeed",

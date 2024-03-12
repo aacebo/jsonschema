@@ -1,0 +1,12 @@
+{
+  "$id": "/array/additional_items/should_error_on_index",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "title": "additional_items/should_error_on_index",
+  "description": "should error on index",
+  "items": [
+    {
+      "type": "string"
+    }
+  ]
+}

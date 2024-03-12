@@ -17,7 +17,7 @@ fmt:
 .PHONY: test
 test:
 	go clean -testcache
-	go test ./... -cover -coverprofile=coverage.out
+	go test ./... -cover -coverprofile=coverage.out -v
 
 cov:
 	go tool cover -html=coverage.out

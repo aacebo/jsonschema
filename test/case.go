@@ -6,6 +6,6 @@ import (
 
 type Case struct {
 	Schema core.Schema
-	Input  string
+	Input  any
 	Errors []string
 }
