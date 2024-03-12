@@ -6,7 +6,7 @@ build:
 	go build -o bin/cmd ./cmd
 	go build -o bin/4 ./drafts/4
 
-clean_build: clean build
+clean.build: clean build
 
 run:
 	go run ./...
@@ -16,6 +16,11 @@ fmt:
 
 .PHONY: test
 test:
+	go clean -testcache
+	go test ./... -cover -coverprofile=coverage.out
+
+.PHONY: test
+test.v:
 	go clean -testcache
 	go test ./... -cover -coverprofile=coverage.out -v
 

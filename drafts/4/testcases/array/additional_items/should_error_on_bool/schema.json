@@ -1,0 +1,13 @@
+{
+  "$id": "/array/additional_items/should_error_on_bool",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "title": "additional_items/should_error_on_bool",
+  "description": "should error on bool",
+  "items": [
+    {
+      "type": "string"
+    }
+  ],
+  "additionalItems": false
+}

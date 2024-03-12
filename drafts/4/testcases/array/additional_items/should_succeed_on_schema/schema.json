@@ -1,9 +1,9 @@
 {
-  "$id": "/array/additional_items/should_succeed",
+  "$id": "/array/additional_items/should_succeed_on_schema",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "array",
-  "title": "additional_items/should_succeed",
-  "description": "should succeed",
+  "title": "additional_items/should_succeed_on_schema",
+  "description": "should succeed on schema",
   "items": [
     {
       "type": "string"
