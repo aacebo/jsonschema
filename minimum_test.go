@@ -5,6 +5,6 @@ import (
 	"testing"
 )
 
-func TestSchema(t *testing.T) {
+func TestMinimum(t *testing.T) {
 	RunAll("./testcases/number/minimum", jsonschema.New(), t)
 }

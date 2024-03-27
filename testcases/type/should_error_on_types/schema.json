@@ -1,0 +1,6 @@
+{
+  "$id": "/type/should_error_on_types",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "should error on types",
+  "type": ["string", "boolean"]
+}

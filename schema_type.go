@@ -121,11 +121,23 @@ var schemaType = Keyword{
 			}
 
 			break
-		case []string:
-			for _, item := range v {
-				if !SchemaType(item).Valid() {
+		case []any:
+			for i, item := range v {
+				str, ok := item.(string)
+
+				if !ok {
 					errs = append(errs, SchemaError{
-						Path:    ctx.Path,
+						Path:    fmt.Sprintf("%s/type/%d", ctx.Path, i),
+						Keyword: "type",
+						Message: `must be a string`,
+					})
+
+					continue
+				}
+
+				if !SchemaType(str).Valid() {
+					errs = append(errs, SchemaError{
+						Path:    fmt.Sprintf("%s/type/%d", ctx.Path, i),
 						Keyword: "type",
 						Message: `must be a valid "SchemaType"`,
 					})
@@ -152,7 +164,11 @@ var schemaType = Keyword{
 		value := reflect.Indirect(reflect.ValueOf(input))
 
 		if !ok {
-			types, _ = ctx.Value.([]string)
+			ts, _ := ctx.Value.([]any)
+
+			for _, t := range ts {
+				types = append(types, t.(string))
+			}
 		} else {
 			types = []string{t}
 		}
