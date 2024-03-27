@@ -6,6 +6,7 @@ import (
 	"reflect"
 )
 
+// https://json-schema.org/understanding-json-schema/reference/enum#enumerated-values
 var enum = Keyword{
 	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
