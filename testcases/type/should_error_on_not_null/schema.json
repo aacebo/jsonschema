@@ -1,5 +1,5 @@
 {
-  "$id": "/null/should_error_on_not_null",
+  "$id": "/type/should_error_on_not_null",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "null",
   "description": "should error on not null"
