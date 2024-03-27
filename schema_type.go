@@ -1,6 +1,8 @@
 package jsonschema
 
 import (
+	"errors"
+	"fmt"
 	"reflect"
 )
 
@@ -56,6 +58,53 @@ func (self SchemaType) Kind() reflect.Kind {
 	return reflect.Invalid
 }
 
+func (self SchemaType) Validate(value any) error {
+	switch self {
+	case SCHEMA_TYPE_ARRAY:
+		if _, ok := value.([]any); !ok {
+			return errors.New(`must be an "array"`)
+		}
+
+		break
+	case SCHEMA_TYPE_BOOLEAN:
+		if _, ok := value.(bool); !ok {
+			return errors.New(`must be a "bool"`)
+		}
+
+		break
+	case SCHEMA_TYPE_INTEGER:
+		if _, ok := value.(int); !ok {
+			return errors.New(`must be a "int"`)
+		}
+
+		break
+	case SCHEMA_TYPE_NULL:
+		if value != nil {
+			return errors.New(`must be "null"`)
+		}
+
+		break
+	case SCHEMA_TYPE_NUMBER:
+		if _, ok := value.(float64); !ok {
+			return errors.New(`must be a "float"`)
+		}
+
+		break
+	case SCHEMA_TYPE_OBJECT:
+		if _, ok := value.(map[string]any); !ok {
+			return errors.New(`must be a "map"`)
+		}
+
+		break
+	case SCHEMA_TYPE_STRING:
+		if _, ok := value.(string); !ok {
+			return errors.New(`must be a "string"`)
+		}
+	}
+
+	return nil
+}
+
 // https://json-schema.org/understanding-json-schema/reference/type
 var schemaType = Keyword{
 	Compile: func(ns *Namespace, ctx Context) []SchemaError {
@@ -98,6 +147,31 @@ var schemaType = Keyword{
 	},
 	Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
 		errs := []SchemaError{}
+		types := []string{}
+		t, ok := ctx.Value.(string)
+		value := reflect.Indirect(reflect.ValueOf(input))
+
+		if !ok {
+			types, _ = ctx.Value.([]string)
+		} else {
+			types = []string{t}
+		}
+
+		for _, t := range types {
+			if SchemaType(t).Validate(input) == nil {
+				return errs
+			}
+		}
+
+		errs = append(errs, SchemaError{
+			Path:    ctx.Path,
+			Keyword: "type",
+			Message: fmt.Sprintf(
+				`"%s" should be one of %v`,
+				value.Kind().String(),
+				types,
+			),
+		})
 
 		return errs
 	},
