@@ -27,7 +27,7 @@ var maximum = Keyword{
 			errs = append(errs, SchemaError{
 				Path:    ctx.Path,
 				Keyword: "maximum",
-				Message: `must be less than "minimum"`,
+				Message: `must be greater than or equal to "minimum"`,
 			})
 		}
 

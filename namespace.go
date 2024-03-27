@@ -33,6 +33,7 @@ func New() *Namespace {
 			"minimum":          minimum,
 			"maximum":          maximum,
 			"exclusiveMinimum": exclusiveMinimum,
+			"exclusiveMaximum": exclusiveMaximum,
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,

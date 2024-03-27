@@ -1,1 +1,1 @@
-["[/maximum] => \"10\" is not less than or equal to \"9\""]
+["[/exclusiveMaximum] => \"10\" is greater than \"9\""]
