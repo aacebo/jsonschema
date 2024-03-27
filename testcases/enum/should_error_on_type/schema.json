@@ -1,0 +1,6 @@
+{
+  "$id": "/enum/should_error_on_type",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "should error on type",
+  "enum": ["test", 1]
+}
