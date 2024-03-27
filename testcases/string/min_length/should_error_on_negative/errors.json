@@ -1,1 +1,1 @@
-["[/minLength] => must be non-negative"]
+["[/minLength] => must be greater than or equal to 0"]

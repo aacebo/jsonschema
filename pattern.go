@@ -28,7 +28,10 @@ var pattern = Keyword{
 			errs = append(errs, SchemaError{
 				Path:    ctx.Path,
 				Keyword: "pattern",
-				Message: err.Error(),
+				Message: fmt.Sprintf(
+					`"%s" is not a valid regular expression`,
+					str,
+				),
 			})
 		}
 
@@ -58,8 +61,9 @@ var pattern = Keyword{
 				Path:    ctx.Path,
 				Keyword: "pattern",
 				Message: fmt.Sprintf(
-					`"%s" does not match`,
+					`"%s" does not match pattern "%s"`,
 					value.String(),
+					ctx.Value.(string),
 				),
 			})
 		}

@@ -9,7 +9,7 @@ import (
 var maxLength = Keyword{
 	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
-		maxLength, ok := ctx.Value.(int)
+		fmaxLength, ok := ctx.Value.(float64)
 
 		if !ok {
 			errs = append(errs, SchemaError{
@@ -21,6 +21,8 @@ var maxLength = Keyword{
 			return errs
 		}
 
+		maxLength := int(fmaxLength)
+
 		if maxLength < 0 {
 			errs = append(errs, SchemaError{
 				Path:    ctx.Path,
@@ -29,13 +31,13 @@ var maxLength = Keyword{
 			})
 		}
 
-		minLength, ok := ctx.Schema["minLength"].(int)
+		minLength, ok := ctx.Schema["minLength"].(float64)
 
-		if ok && minLength > maxLength {
+		if ok && int(minLength) > maxLength {
 			errs = append(errs, SchemaError{
 				Path:    ctx.Path,
 				Keyword: "maxLength",
-				Message: `must be greater than "minLength"`,
+				Message: `must be greater than or equal to "minLength"`,
 			})
 		}
 
@@ -58,14 +60,14 @@ var maxLength = Keyword{
 			return errs
 		}
 
-		if value.Len() > ctx.Value.(int) {
+		if value.Len() > int(ctx.Value.(float64)) {
 			errs = append(errs, SchemaError{
 				Path:    ctx.Path,
 				Keyword: "maxLength",
 				Message: fmt.Sprintf(
 					`length "%d" is greater than "%d"`,
 					value.Len(),
-					ctx.Value.(int),
+					int(ctx.Value.(float64)),
 				),
 			})
 		}

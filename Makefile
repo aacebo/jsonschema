@@ -22,5 +22,5 @@ test.v:
 	go clean -testcache
 	go test ./... -cover -coverprofile=coverage.out -v
 
-cov:
+test.cov:
 	go tool cover -html=coverage.out

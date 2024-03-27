@@ -9,7 +9,7 @@ import (
 var minLength = Keyword{
 	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
-		minLength, ok := ctx.Value.(int)
+		fminLength, ok := ctx.Value.(float64)
 
 		if !ok {
 			errs = append(errs, SchemaError{
@@ -20,6 +20,8 @@ var minLength = Keyword{
 
 			return errs
 		}
+
+		minLength := int(fminLength)
 
 		if minLength < 0 {
 			errs = append(errs, SchemaError{
@@ -48,14 +50,14 @@ var minLength = Keyword{
 			return errs
 		}
 
-		if value.Len() < ctx.Value.(int) {
+		if value.Len() < int(ctx.Value.(float64)) {
 			errs = append(errs, SchemaError{
 				Path:    ctx.Path,
 				Keyword: "minLength",
 				Message: fmt.Sprintf(
 					`length "%d" is less than "%d"`,
 					value.Len(),
-					ctx.Value.(int),
+					int(ctx.Value.(float64)),
 				),
 			})
 		}
