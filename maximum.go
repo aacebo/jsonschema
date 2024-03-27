@@ -7,7 +7,7 @@ import (
 
 // https://json-schema.org/understanding-json-schema/reference/numeric#range
 var maximum = Keyword{
-	compile: func(ns *Namespace, ctx Context) []SchemaError {
+	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
 		maximum, ok := ctx.Value.(float64)
 
@@ -33,7 +33,7 @@ var maximum = Keyword{
 
 		return errs
 	},
-	validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+	Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
 		errs := []SchemaError{}
 		value := reflect.Indirect(reflect.ValueOf(input))
 

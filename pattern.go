@@ -8,7 +8,7 @@ import (
 
 // https://json-schema.org/understanding-json-schema/reference/string#regexp
 var pattern = Keyword{
-	compile: func(ns *Namespace, ctx Context) []SchemaError {
+	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
 		str, ok := ctx.Value.(string)
 
@@ -34,7 +34,7 @@ var pattern = Keyword{
 
 		return errs
 	},
-	validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+	Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
 		errs := []SchemaError{}
 		value := reflect.Indirect(reflect.ValueOf(input))
 

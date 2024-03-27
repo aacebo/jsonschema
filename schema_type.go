@@ -58,7 +58,7 @@ func (self SchemaType) Kind() reflect.Kind {
 
 // https://json-schema.org/understanding-json-schema/reference/type
 var schemaType = Keyword{
-	compile: func(ns *Namespace, ctx Context) []SchemaError {
+	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
 
 		switch v := ctx.Value.(type) {
@@ -96,7 +96,7 @@ var schemaType = Keyword{
 
 		return errs
 	},
-	validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+	Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
 		errs := []SchemaError{}
 
 		return errs

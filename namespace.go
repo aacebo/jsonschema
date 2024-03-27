@@ -85,6 +85,11 @@ func (self *Namespace) AddSchema(schema Schema) *Namespace {
 	return self
 }
 
+func (self *Namespace) AddKeyword(name string, keyword Keyword) *Namespace {
+	self.keywords[name] = keyword
+	return self
+}
+
 func (self *Namespace) Compile(id string) []SchemaError {
 	errs := []SchemaError{}
 	schema, ok := self.schemas[id]
@@ -96,11 +101,11 @@ func (self *Namespace) Compile(id string) []SchemaError {
 	for key, value := range schema {
 		keyword, ok := self.keywords[key]
 
-		if !ok || value == nil || keyword.compile == nil {
+		if !ok || value == nil || keyword.Compile == nil {
 			continue
 		}
 
-		err := keyword.compile(self, Context{
+		err := keyword.Compile(self, Context{
 			Path:   "",
 			Schema: schema,
 			Value:  value,
@@ -125,11 +130,11 @@ func (self *Namespace) Validate(id string, value any) []SchemaError {
 	for key, svalue := range schema {
 		keyword, ok := self.keywords[key]
 
-		if !ok || svalue == nil || keyword.validate == nil {
+		if !ok || svalue == nil || keyword.Validate == nil {
 			continue
 		}
 
-		err := keyword.validate(self, Context{
+		err := keyword.Validate(self, Context{
 			Path:   "",
 			Schema: schema,
 			Value:  svalue,

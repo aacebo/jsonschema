@@ -2,7 +2,7 @@ package jsonschema
 
 // https://json-schema.org/understanding-json-schema/reference/conditionals#dependentRequired
 var dependencies = Keyword{
-	compile: func(ns *Namespace, ctx Context) []SchemaError {
+	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
 		_, ok := ctx.Value.(map[string][]string)
 

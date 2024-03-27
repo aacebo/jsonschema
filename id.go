@@ -2,7 +2,7 @@ package jsonschema
 
 // https://json-schema.org/understanding-json-schema/basics#declaring-a-unique-identifier
 var id = Keyword{
-	compile: func(ns *Namespace, ctx Context) []SchemaError {
+	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
 		_, ok := ctx.Value.(string)
 

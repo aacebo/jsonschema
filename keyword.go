@@ -7,6 +7,6 @@ type Context struct {
 }
 
 type Keyword struct {
-	compile  func(ns *Namespace, ctx Context) []SchemaError
-	validate func(ns *Namespace, ctx Context, input any) []SchemaError
+	Compile  func(ns *Namespace, ctx Context) []SchemaError
+	Validate func(ns *Namespace, ctx Context, input any) []SchemaError
 }

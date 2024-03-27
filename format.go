@@ -7,7 +7,7 @@ import (
 
 // https://json-schema.org/understanding-json-schema/reference/string#format
 var format = Keyword{
-	compile: func(ns *Namespace, ctx Context) []SchemaError {
+	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
 		format, ok := ctx.Value.(string)
 
@@ -34,7 +34,7 @@ var format = Keyword{
 
 		return errs
 	},
-	validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+	Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
 		errs := []SchemaError{}
 		value := reflect.Indirect(reflect.ValueOf(input))
 
