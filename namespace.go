@@ -37,6 +37,7 @@ func New() *Namespace {
 			"enum":             enum,
 			"items":            items,
 			"additionalItems":  additionalItems,
+			"anyOf":            anyOf,
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,

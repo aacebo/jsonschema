@@ -1,0 +1,13 @@
+{
+  "$id": "/anyOf/should_error_on_no_match",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "should error on no match",
+  "anyOf": [
+    {
+      "type": "string"
+    },
+    {
+      "type": "number"
+    }
+  ]
+}
