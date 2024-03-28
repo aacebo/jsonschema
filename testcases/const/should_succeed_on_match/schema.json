@@ -1,0 +1,6 @@
+{
+  "$id": "/const/should_succeed_on_match",
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "description": "should succeed on match",
+  "const": "test"
+}

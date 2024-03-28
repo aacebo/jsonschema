@@ -1,0 +1,6 @@
+{
+  "$id": "/const/should_error_on_no_match",
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "description": "should error on no match",
+  "const": "test"
+}

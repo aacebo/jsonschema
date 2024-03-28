@@ -42,6 +42,7 @@ func New() *Namespace {
 			"oneOf":            oneOf,
 			"not":              not,
 			"default":          _default,
+			"const":            _const,
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,
