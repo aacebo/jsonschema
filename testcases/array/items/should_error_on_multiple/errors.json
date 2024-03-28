@@ -1,4 +1,4 @@
 [
-  "[/items/0/type] => should be type \"number\"",
-  "[/items/1/type] => should be type \"string\""
+  "[/0/type] => \"string\" should be one of [number]",
+  "[/1/type] => \"float64\" should be one of [string]"
 ]

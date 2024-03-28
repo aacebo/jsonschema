@@ -35,6 +35,7 @@ func New() *Namespace {
 			"exclusiveMinimum": exclusiveMinimum,
 			"exclusiveMaximum": exclusiveMaximum,
 			"enum":             enum,
+			"items":            items,
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,
@@ -72,14 +73,14 @@ func (self Namespace) HasSchema(id string) bool {
 	return ok
 }
 
-func (self Namespace) GetSchema(id string) *Schema {
+func (self Namespace) GetSchema(id string) Schema {
 	schema, ok := self.schemas[id]
 
 	if !ok {
 		return nil
 	}
 
-	return &schema
+	return schema
 }
 
 func (self *Namespace) AddSchema(schema Schema) *Namespace {
@@ -93,61 +94,23 @@ func (self *Namespace) AddKeyword(name string, keyword Keyword) *Namespace {
 }
 
 func (self *Namespace) Compile(id string) []SchemaError {
-	errs := []SchemaError{}
 	schema, ok := self.schemas[id]
 
 	if !ok {
-		return errs
+		return []SchemaError{}
 	}
 
-	for key, value := range schema {
-		keyword, ok := self.keywords[key]
-
-		if !ok || value == nil || keyword.Compile == nil {
-			continue
-		}
-
-		err := keyword.Compile(self, Context{
-			Path:   "",
-			Schema: schema,
-			Value:  value,
-		})
-
-		if len(err) > 0 {
-			errs = append(errs, err...)
-		}
-	}
-
-	return errs
+	return self.compile("", schema)
 }
 
 func (self *Namespace) Validate(id string, value any) []SchemaError {
-	errs := []SchemaError{}
 	schema, ok := self.schemas[id]
 
 	if !ok {
-		return errs
+		return []SchemaError{}
 	}
 
-	for key, svalue := range schema {
-		keyword, ok := self.keywords[key]
-
-		if !ok || svalue == nil || keyword.Validate == nil {
-			continue
-		}
-
-		err := keyword.Validate(self, Context{
-			Path:   "",
-			Schema: schema,
-			Value:  svalue,
-		}, value)
-
-		if len(err) > 0 {
-			errs = append(errs, err...)
-		}
-	}
-
-	return errs
+	return self.validate("", schema, value)
 }
 
 func (self *Namespace) Read(path string) (Schema, error) {
@@ -167,4 +130,52 @@ func (self *Namespace) Read(path string) (Schema, error) {
 	id := schema.ID()
 	self.schemas[id] = schema
 	return schema, nil
+}
+
+func (self *Namespace) compile(path string, schema Schema) []SchemaError {
+	errs := []SchemaError{}
+
+	for key, value := range schema {
+		keyword, ok := self.keywords[key]
+
+		if !ok || value == nil || keyword.Compile == nil {
+			continue
+		}
+
+		err := keyword.Compile(self, Context{
+			Path:   path,
+			Schema: schema,
+			Value:  value,
+		})
+
+		if len(err) > 0 {
+			errs = append(errs, err...)
+		}
+	}
+
+	return errs
+}
+
+func (self *Namespace) validate(path string, schema Schema, value any) []SchemaError {
+	errs := []SchemaError{}
+
+	for key, svalue := range schema {
+		keyword, ok := self.keywords[key]
+
+		if !ok || svalue == nil || keyword.Validate == nil {
+			continue
+		}
+
+		err := keyword.Validate(self, Context{
+			Path:   path,
+			Schema: schema,
+			Value:  svalue,
+		}, value)
+
+		if len(err) > 0 {
+			errs = append(errs, err...)
+		}
+	}
+
+	return errs
 }
