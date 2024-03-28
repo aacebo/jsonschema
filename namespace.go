@@ -38,6 +38,7 @@ func New() *Namespace {
 			"items":            items,
 			"additionalItems":  additionalItems,
 			"anyOf":            anyOf,
+			"allOf":            allOf,
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,
