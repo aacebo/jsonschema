@@ -37,6 +37,7 @@ func New() *Namespace {
 			"exclusiveMaximum": exclusiveMaximum("exclusiveMaximum"),
 			"enum":             enum("enum"),
 			"items":            items("items"),
+			"minItems":         minItems("minItems"),
 			"additionalItems":  additionalItems("additionalItems"),
 			"anyOf":            anyOf("anyOf"),
 			"allOf":            allOf("allOf"),

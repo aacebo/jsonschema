@@ -1,1 +1,1 @@
-["[/minItems] => must be non-negative"]
+["[/minItems] => must be greater than or equal to 0"]

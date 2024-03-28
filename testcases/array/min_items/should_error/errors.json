@@ -1,1 +1,1 @@
-["[/minItems] => \"1\" is not greater than or equal to \"2\""]
+["[/minItems] => length \"1\" is less than \"2\""]
