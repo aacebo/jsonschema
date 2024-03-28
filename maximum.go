@@ -2,19 +2,16 @@ package jsonschema
 
 import (
 	"fmt"
+	"jsonschema/coerce"
 	"reflect"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/numeric#range
 func maximum(key string) Keyword {
 	return Keyword{
-		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
-
-			if !config.CanFloat() && config.CanConvert(reflect.TypeOf(0.0)) {
-				config = config.Convert(reflect.TypeOf(0.0))
-			}
+			config = coerce.Float(config)
 
 			if !config.CanFloat() {
 				errs = append(errs, SchemaError{
@@ -32,9 +29,7 @@ func maximum(key string) Keyword {
 				return errs
 			}
 
-			if !minimum.CanFloat() && minimum.CanConvert(reflect.TypeOf(0.0)) {
-				minimum = minimum.Convert(reflect.TypeOf(0.0))
-			}
+			minimum = coerce.Float(minimum)
 
 			if minimum.CanFloat() && minimum.Float() > config.Float() {
 				errs = append(errs, SchemaError{
@@ -46,14 +41,10 @@ func maximum(key string) Keyword {
 
 			return errs
 		},
-		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
-			value := reflect.Indirect(reflect.ValueOf(input))
-
-			if !value.CanFloat() && value.CanConvert(reflect.TypeOf(0.0)) {
-				value = value.Convert(reflect.TypeOf(0.0))
-			}
+			config = coerce.Float(config)
+			value = coerce.Float(value)
 
 			if !value.CanFloat() {
 				return errs

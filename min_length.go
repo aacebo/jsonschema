@@ -2,6 +2,7 @@ package jsonschema
 
 import (
 	"fmt"
+	"jsonschema/coerce"
 	"reflect"
 )
 
@@ -9,13 +10,9 @@ import (
 func minLength(key string) Keyword {
 	return Keyword{
 		Default: 0,
-		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
-
-			if !config.CanInt() && config.CanConvert(reflect.TypeOf(0)) {
-				config = config.Convert(reflect.TypeOf(0))
-			}
+			config = coerce.Int(config)
 
 			if !config.CanInt() {
 				errs = append(errs, SchemaError{
@@ -39,17 +36,12 @@ func minLength(key string) Keyword {
 
 			return errs
 		},
-		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
-			value := reflect.Indirect(reflect.ValueOf(input))
+			config = coerce.Int(config)
 
 			if value.Kind() != reflect.String {
 				return errs
-			}
-
-			if !config.CanInt() && config.CanConvert(reflect.TypeOf(0)) {
-				config = config.Convert(reflect.TypeOf(0))
 			}
 
 			if value.Len() < int(config.Int()) {

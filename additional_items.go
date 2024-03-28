@@ -1,15 +1,18 @@
 package jsonschema
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 // https://json-schema.org/understanding-json-schema/reference/array#additionalitems
 func additionalItems(key string) Keyword {
 	return Keyword{
 		Default: Schema{},
-		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			switch ctx.Value.(type) {
+			switch config.Interface().(type) {
 			case bool:
 				break
 			case map[string]any:
@@ -26,9 +29,14 @@ func additionalItems(key string) Keyword {
 
 			return errs
 		},
-		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			arr, ok := input.([]any)
+
+			if !value.IsValid() {
+				return errs
+			}
+
+			arr, ok := value.Interface().([]any)
 
 			if !ok {
 				return errs
@@ -40,7 +48,7 @@ func additionalItems(key string) Keyword {
 				return errs
 			}
 
-			switch v := ctx.Value.(type) {
+			switch v := config.Interface().(type) {
 			case bool:
 				if !v {
 					errs = append(errs, SchemaError{

@@ -9,11 +9,10 @@ import (
 // https://json-schema.org/understanding-json-schema/reference/enum#enumerated-values
 func enum(key string) Keyword {
 	return Keyword{
-		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			_, ok := ctx.Value.([]any)
 
-			if !ok {
+			if config.Kind() != reflect.Slice {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
@@ -25,17 +24,15 @@ func enum(key string) Keyword {
 
 			return errs
 		},
-		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			value := reflect.Indirect(reflect.ValueOf(input))
-			options := ctx.Value.([]any)
 
 			if !value.Comparable() {
 				b, _ := json.Marshal(value.Interface())
 				value = reflect.ValueOf(string(b))
 			}
 
-			for _, o := range options {
+			for _, o := range config.Interface().([]any) {
 				option := reflect.Indirect(reflect.ValueOf(o))
 
 				if !option.Comparable() {
@@ -55,7 +52,7 @@ func enum(key string) Keyword {
 				Keyword: key,
 				Message: fmt.Sprintf(
 					`must be one of %v`,
-					options,
+					config.Interface(),
 				),
 			})
 

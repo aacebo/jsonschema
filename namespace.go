@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"jsonschema/formats"
 	"os"
+	"reflect"
 )
 
 type Namespace struct {
@@ -143,18 +144,18 @@ func (self *Namespace) Read(path string) (Schema, error) {
 func (self *Namespace) compile(path string, schema Schema) []SchemaError {
 	errs := []SchemaError{}
 
-	for key, value := range schema {
+	for key, config := range schema {
 		keyword, ok := self.keywords[key]
 
-		if !ok || value == nil || keyword.Compile == nil {
+		if !ok || config == nil || keyword.Compile == nil {
 			continue
 		}
 
-		err := keyword.Compile(self, Context{
-			Path:   path,
-			Schema: schema,
-			Value:  value,
-		})
+		err := keyword.Compile(
+			self,
+			Context{path, schema},
+			reflect.Indirect(reflect.ValueOf(config)),
+		)
 
 		if len(err) > 0 {
 			errs = append(errs, err...)
@@ -183,11 +184,12 @@ func (self *Namespace) validate(path string, schema Schema, value any) []SchemaE
 			continue
 		}
 
-		err := keyword.Validate(self, Context{
-			Path:   path,
-			Schema: schema,
-			Value:  config,
-		}, value)
+		err := keyword.Validate(
+			self,
+			Context{path, schema},
+			reflect.Indirect(reflect.ValueOf(config)),
+			reflect.Indirect(reflect.ValueOf(value)),
+		)
 
 		if len(err) > 0 {
 			errs = append(errs, err...)

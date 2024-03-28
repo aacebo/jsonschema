@@ -1,13 +1,16 @@
 package jsonschema
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 // https://json-schema.org/understanding-json-schema/reference/combining#anyOf
 func anyOf(key string) Keyword {
 	return Keyword{
-		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			schemas, ok := ctx.Value.([]any)
+			schemas, ok := config.Interface().([]any)
 
 			if !ok {
 				errs = append(errs, SchemaError{
@@ -42,9 +45,9 @@ func anyOf(key string) Keyword {
 
 			return errs
 		},
-		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			schemas, ok := ctx.Value.([]any)
+			schemas, ok := config.Interface().([]any)
 
 			if !ok {
 				return errs
@@ -57,7 +60,7 @@ func anyOf(key string) Keyword {
 					continue
 				}
 
-				_errs := ns.validate(ctx.Path, schema, input)
+				_errs := ns.validate(ctx.Path, schema, value.Interface())
 
 				if len(_errs) == 0 {
 					return errs

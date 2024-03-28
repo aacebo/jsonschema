@@ -9,9 +9,8 @@ import (
 // https://json-schema.org/understanding-json-schema/reference/string#regexp
 func pattern(key string) Keyword {
 	return Keyword{
-		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 
 			if config.Kind() != reflect.String {
 				errs = append(errs, SchemaError{
@@ -38,10 +37,8 @@ func pattern(key string) Keyword {
 
 			return errs
 		},
-		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
-			value := reflect.Indirect(reflect.ValueOf(input))
 
 			if value.Kind() != reflect.String {
 				return errs

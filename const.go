@@ -8,9 +8,8 @@ import (
 // https://json-schema.org/understanding-json-schema/reference/const#constant-values
 func _const(key string) Keyword {
 	return Keyword{
-		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 
 			if !config.Comparable() {
 				errs = append(errs, SchemaError{
@@ -22,10 +21,8 @@ func _const(key string) Keyword {
 
 			return errs
 		},
-		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			value := reflect.Indirect(reflect.ValueOf(input))
-			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 
 			if value.Kind() != config.Kind() || !value.Equal(config) {
 				errs = append(errs, SchemaError{

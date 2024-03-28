@@ -1,13 +1,14 @@
 package jsonschema
 
+import "reflect"
+
 // https://json-schema.org/understanding-json-schema/reference/schema#declaring-a-dialect
 func schemaSpec(key string) Keyword {
 	return Keyword{
-		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			_, ok := ctx.Value.(string)
 
-			if !ok {
+			if config.Kind() != reflect.String {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,

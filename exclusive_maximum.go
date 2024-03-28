@@ -2,6 +2,7 @@ package jsonschema
 
 import (
 	"fmt"
+	"jsonschema/coerce"
 	"reflect"
 )
 
@@ -9,97 +10,91 @@ import (
 func exclusiveMaximum(key string) Keyword {
 	return Keyword{
 		Default: false,
-		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			_, ok := ctx.Value.(bool)
 
-			if !ok {
-				exclusiveMaximum, ok := ctx.Value.(float64)
+			if config.Kind() == reflect.Bool {
+				maximum := reflect.Indirect(reflect.ValueOf(ctx.Schema["maximum"]))
 
-				if !ok {
+				if !maximum.IsValid() {
 					errs = append(errs, SchemaError{
 						Path:    ctx.Path,
 						Keyword: key,
-						Message: `must be a "bool" or "float"`,
+						Message: `"maximum" is required when "boolean"`,
+					})
+				}
+			} else {
+				config = coerce.Float(config)
+
+				if !config.CanFloat() {
+					errs = append(errs, SchemaError{
+						Path:    ctx.Path,
+						Keyword: key,
+						Message: `must be a "boolean" or "number"`,
 					})
 
 					return errs
 				}
 
-				exclusiveMinimum, ok := ctx.Value.(float64)
+				exclusiveMinimum := reflect.Indirect(reflect.ValueOf(ctx.Schema["exclusiveMinimum"]))
 
-				if ok && exclusiveMinimum > exclusiveMaximum {
+				if exclusiveMinimum.CanFloat() && exclusiveMinimum.Float() > config.Float() {
 					errs = append(errs, SchemaError{
 						Path:    ctx.Path,
 						Keyword: key,
 						Message: `must be greater than or equal to "exclusiveMinimum"`,
 					})
 				}
-			} else {
-				_, ok := ctx.Schema["maximum"].(float64)
-
-				if !ok {
-					errs = append(errs, SchemaError{
-						Path:    ctx.Path,
-						Keyword: key,
-						Message: `"maximum" is required when "bool"`,
-					})
-				}
 			}
 
 			return errs
 		},
-		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			value := reflect.Indirect(reflect.ValueOf(input))
+			value = coerce.Float(value)
 
-			if value.Kind() != reflect.Float64 {
+			if !value.CanFloat() {
 				return errs
 			}
 
-			switch v := ctx.Value.(type) {
-			case bool:
-				if !v {
-					break
+			if config.Kind() == reflect.Bool {
+				if !config.Bool() {
+					return errs
 				}
 
-				maximum, _ := ctx.Schema["maximum"].(float64)
+				maximum := reflect.Indirect(reflect.ValueOf(ctx.Schema["maximum"]))
 
-				if value.Float() > maximum-1 {
+				if !maximum.IsValid() {
+					return errs
+				}
+
+				maximum = coerce.Float(maximum)
+
+				if value.Float() > maximum.Float()-1 {
 					errs = append(errs, SchemaError{
 						Path:    ctx.Path,
 						Keyword: key,
 						Message: fmt.Sprintf(
 							`"%v" is greater than "%v"`,
 							value.Float(),
-							maximum-1,
+							maximum.Float()-1,
 						),
 					})
 				}
+			} else {
+				config = coerce.Float(config)
 
-				break
-			case float64:
-				if value.Float() > v {
+				if value.Float() > config.Float() {
 					errs = append(errs, SchemaError{
 						Path:    ctx.Path,
 						Keyword: key,
 						Message: fmt.Sprintf(
 							`"%v" is greater than "%v"`,
 							value.Float(),
-							v,
+							config.Float(),
 						),
 					})
 				}
-
-				break
-			default:
-				errs = append(errs, SchemaError{
-					Path:    ctx.Path,
-					Keyword: key,
-					Message: `must be a "bool" or "float"`,
-				})
-
-				break
 			}
 
 			return errs

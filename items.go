@@ -2,16 +2,17 @@ package jsonschema
 
 import (
 	"fmt"
+	"reflect"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/array#items
 func items(key string) Keyword {
 	return Keyword{
 		Default: Schema{},
-		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			switch v := ctx.Value.(type) {
+			switch v := config.Interface().(type) {
 			case map[string]any:
 				return ns.compile(fmt.Sprintf("%s/%s", ctx.Path, key), v)
 			case []any:
@@ -48,15 +49,20 @@ func items(key string) Keyword {
 
 			return errs
 		},
-		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			items, ok := input.([]any)
+
+			if !value.IsValid() {
+				return errs
+			}
+
+			items, ok := value.Interface().([]any)
 
 			if !ok {
 				return errs
 			}
 
-			switch v := ctx.Value.(type) {
+			switch v := config.Interface().(type) {
 			case map[string]any:
 				for i, item := range items {
 					_errs := ns.validate(fmt.Sprintf("%s/%d", ctx.Path, i), v, item)

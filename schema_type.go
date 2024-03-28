@@ -108,12 +108,12 @@ func (self SchemaType) Validate(value any) error {
 // https://json-schema.org/understanding-json-schema/reference/type
 func schemaType(key string) Keyword {
 	return Keyword{
-		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			switch v := ctx.Value.(type) {
-			case string:
-				if !SchemaType(v).Valid() {
+			switch config.Kind() {
+			case reflect.String:
+				if !SchemaType(config.String()).Valid() {
 					errs = append(errs, SchemaError{
 						Path:    ctx.Path,
 						Keyword: key,
@@ -122,21 +122,11 @@ func schemaType(key string) Keyword {
 				}
 
 				break
-			case []any:
-				for i, item := range v {
-					str, ok := item.(string)
+			case reflect.Slice:
+				for i, item := range config.Interface().([]any) {
+					item := reflect.Indirect(reflect.ValueOf(item))
 
-					if !ok {
-						errs = append(errs, SchemaError{
-							Path:    fmt.Sprintf("%s/%s/%d", ctx.Path, key, i),
-							Keyword: key,
-							Message: `must be a string`,
-						})
-
-						continue
-					}
-
-					if !SchemaType(str).Valid() {
+					if item.Kind() != reflect.String || !SchemaType(item.String()).Valid() {
 						errs = append(errs, SchemaError{
 							Path:    fmt.Sprintf("%s/%s/%d", ctx.Path, key, i),
 							Keyword: key,
@@ -158,24 +148,24 @@ func schemaType(key string) Keyword {
 
 			return errs
 		},
-		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 			types := []string{}
-			t, ok := ctx.Value.(string)
-			value := reflect.Indirect(reflect.ValueOf(input))
 
-			if !ok {
-				ts, _ := ctx.Value.([]any)
+			if !value.IsValid() {
+				return errs
+			}
 
-				for _, t := range ts {
+			if config.Kind() == reflect.String {
+				types = append(types, config.String())
+			} else {
+				for _, t := range config.Interface().([]any) {
 					types = append(types, t.(string))
 				}
-			} else {
-				types = []string{t}
 			}
 
 			for _, t := range types {
-				if SchemaType(t).Validate(input) == nil {
+				if SchemaType(t).Validate(value.Interface()) == nil {
 					return errs
 				}
 			}
