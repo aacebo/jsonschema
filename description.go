@@ -1,19 +1,21 @@
 package jsonschema
 
 // https://json-schema.org/understanding-json-schema/reference/annotations
-var description = Keyword{
-	Compile: func(ns *Namespace, ctx Context) []SchemaError {
-		errs := []SchemaError{}
-		_, ok := ctx.Value.(string)
+func description(key string) Keyword {
+	return Keyword{
+		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+			errs := []SchemaError{}
+			_, ok := ctx.Value.(string)
 
-		if !ok {
-			errs = append(errs, SchemaError{
-				Path:    ctx.Path,
-				Keyword: "description",
-				Message: `must be a "string"`,
-			})
-		}
+			if !ok {
+				errs = append(errs, SchemaError{
+					Path:    ctx.Path,
+					Keyword: key,
+					Message: `must be a "string"`,
+				})
+			}
 
-		return errs
-	},
+			return errs
+		},
+	}
 }

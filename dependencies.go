@@ -1,19 +1,21 @@
 package jsonschema
 
 // https://json-schema.org/understanding-json-schema/reference/conditionals#dependentRequired
-var dependencies = Keyword{
-	Compile: func(ns *Namespace, ctx Context) []SchemaError {
-		errs := []SchemaError{}
-		_, ok := ctx.Value.(map[string][]string)
+func dependencies(key string) Keyword {
+	return Keyword{
+		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+			errs := []SchemaError{}
+			_, ok := ctx.Value.(map[string][]string)
 
-		if !ok {
-			errs = append(errs, SchemaError{
-				Path:    ctx.Path,
-				Keyword: "dependencies",
-				Message: `must be a "map[string][]string"`,
-			})
-		}
+			if !ok {
+				errs = append(errs, SchemaError{
+					Path:    ctx.Path,
+					Keyword: key,
+					Message: `must be a "map[string][]string"`,
+				})
+			}
 
-		return errs
-	},
+			return errs
+		},
+	}
 }

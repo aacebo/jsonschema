@@ -106,89 +106,91 @@ func (self SchemaType) Validate(value any) error {
 }
 
 // https://json-schema.org/understanding-json-schema/reference/type
-var schemaType = Keyword{
-	Compile: func(ns *Namespace, ctx Context) []SchemaError {
-		errs := []SchemaError{}
+func schemaType(key string) Keyword {
+	return Keyword{
+		Compile: func(ns *Namespace, ctx Context) []SchemaError {
+			errs := []SchemaError{}
 
-		switch v := ctx.Value.(type) {
-		case string:
-			if !SchemaType(v).Valid() {
+			switch v := ctx.Value.(type) {
+			case string:
+				if !SchemaType(v).Valid() {
+					errs = append(errs, SchemaError{
+						Path:    ctx.Path,
+						Keyword: key,
+						Message: `must be a valid "SchemaType"`,
+					})
+				}
+
+				break
+			case []any:
+				for i, item := range v {
+					str, ok := item.(string)
+
+					if !ok {
+						errs = append(errs, SchemaError{
+							Path:    fmt.Sprintf("%s/%s/%d", ctx.Path, key, i),
+							Keyword: key,
+							Message: `must be a string`,
+						})
+
+						continue
+					}
+
+					if !SchemaType(str).Valid() {
+						errs = append(errs, SchemaError{
+							Path:    fmt.Sprintf("%s/%s/%d", ctx.Path, key, i),
+							Keyword: key,
+							Message: `must be a valid "SchemaType"`,
+						})
+
+						break
+					}
+				}
+
+				break
+			default:
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
-					Keyword: "type",
-					Message: `must be a valid "SchemaType"`,
+					Keyword: key,
+					Message: `must be a "string" or "[]string"`,
 				})
 			}
 
-			break
-		case []any:
-			for i, item := range v {
-				str, ok := item.(string)
+			return errs
+		},
+		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
+			errs := []SchemaError{}
+			types := []string{}
+			t, ok := ctx.Value.(string)
+			value := reflect.Indirect(reflect.ValueOf(input))
 
-				if !ok {
-					errs = append(errs, SchemaError{
-						Path:    fmt.Sprintf("%s/type/%d", ctx.Path, i),
-						Keyword: "type",
-						Message: `must be a string`,
-					})
+			if !ok {
+				ts, _ := ctx.Value.([]any)
 
-					continue
+				for _, t := range ts {
+					types = append(types, t.(string))
 				}
+			} else {
+				types = []string{t}
+			}
 
-				if !SchemaType(str).Valid() {
-					errs = append(errs, SchemaError{
-						Path:    fmt.Sprintf("%s/type/%d", ctx.Path, i),
-						Keyword: "type",
-						Message: `must be a valid "SchemaType"`,
-					})
-
-					break
+			for _, t := range types {
+				if SchemaType(t).Validate(input) == nil {
+					return errs
 				}
 			}
 
-			break
-		default:
 			errs = append(errs, SchemaError{
 				Path:    ctx.Path,
-				Keyword: "type",
-				Message: `must be a "string" or "[]string"`,
+				Keyword: key,
+				Message: fmt.Sprintf(
+					`"%s" should be one of %v`,
+					value.Kind().String(),
+					types,
+				),
 			})
-		}
 
-		return errs
-	},
-	Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
-		errs := []SchemaError{}
-		types := []string{}
-		t, ok := ctx.Value.(string)
-		value := reflect.Indirect(reflect.ValueOf(input))
-
-		if !ok {
-			ts, _ := ctx.Value.([]any)
-
-			for _, t := range ts {
-				types = append(types, t.(string))
-			}
-		} else {
-			types = []string{t}
-		}
-
-		for _, t := range types {
-			if SchemaType(t).Validate(input) == nil {
-				return errs
-			}
-		}
-
-		errs = append(errs, SchemaError{
-			Path:    ctx.Path,
-			Keyword: "type",
-			Message: fmt.Sprintf(
-				`"%s" should be one of %v`,
-				value.Kind().String(),
-				types,
-			),
-		})
-
-		return errs
-	},
+			return errs
+		},
+	}
 }
