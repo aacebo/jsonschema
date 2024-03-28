@@ -40,6 +40,7 @@ func New() *Namespace {
 			"anyOf":            anyOf,
 			"allOf":            allOf,
 			"oneOf":            oneOf,
+			"not":              not,
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,

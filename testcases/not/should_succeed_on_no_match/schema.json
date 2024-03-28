@@ -1,0 +1,8 @@
+{
+  "$id": "/not/should_succeed_on_no_match",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "should succeed on no match",
+  "not": {
+    "type": "string"
+  }
+}

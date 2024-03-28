@@ -1,0 +1,8 @@
+{
+  "$id": "/not/should_error_on_match",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "should error on match",
+  "not": {
+    "type": "string"
+  }
+}
