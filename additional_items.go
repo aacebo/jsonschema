@@ -58,6 +58,8 @@ var additionalItems = Keyword{
 					errs = append(errs, _errs...)
 				}
 			}
+
+			break
 		}
 
 		return errs
