@@ -12,10 +12,10 @@ func additionalItems(key string) Keyword {
 		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			switch config.Interface().(type) {
-			case bool:
+			switch config.Kind() {
+			case reflect.Bool:
 				break
-			case map[string]any:
+			case reflect.Map:
 				break
 			default:
 				errs = append(errs, SchemaError{
@@ -32,25 +32,23 @@ func additionalItems(key string) Keyword {
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			if !value.IsValid() {
+			if !value.IsValid() || value.Kind() != reflect.Slice {
 				return errs
 			}
 
-			arr, ok := value.Interface().([]any)
+			items := reflect.Indirect(reflect.ValueOf(ctx.Schema["items"]))
 
-			if !ok {
+			if !items.IsValid() || items.Kind() != reflect.Slice {
 				return errs
 			}
 
-			items, ok := ctx.Schema["items"].([]any)
-
-			if !ok || len(arr) <= len(items) {
+			if value.Len() <= items.Len() {
 				return errs
 			}
 
-			switch v := config.Interface().(type) {
-			case bool:
-				if !v {
+			switch config.Kind() {
+			case reflect.Bool:
+				if !config.Bool() {
 					errs = append(errs, SchemaError{
 						Path:    ctx.Path,
 						Keyword: key,
@@ -59,9 +57,14 @@ func additionalItems(key string) Keyword {
 				}
 
 				break
-			case map[string]any:
-				for i := len(items); i < len(arr); i++ {
-					_errs := ns.validate(fmt.Sprintf("%s/%d", ctx.Path, i), v, arr[i])
+			case reflect.Map:
+				for i := items.Len(); i < value.Len(); i++ {
+					index := value.Index(i)
+					_errs := ns.validate(
+						fmt.Sprintf("%s/%d", ctx.Path, i),
+						config.Interface().(map[string]any),
+						index.Interface(),
+					)
 
 					if len(_errs) > 0 {
 						errs = append(errs, _errs...)

@@ -123,10 +123,10 @@ func schemaType(key string) Keyword {
 
 				break
 			case reflect.Slice:
-				for i, item := range config.Interface().([]any) {
-					item := reflect.Indirect(reflect.ValueOf(item))
+				for i := 0; i < config.Len(); i++ {
+					index := config.Index(i).Elem()
 
-					if item.Kind() != reflect.String || !SchemaType(item.String()).Valid() {
+					if index.Kind() != reflect.String || !SchemaType(index.String()).Valid() {
 						errs = append(errs, SchemaError{
 							Path:    fmt.Sprintf("%s/%s/%d", ctx.Path, key, i),
 							Keyword: key,
@@ -159,8 +159,9 @@ func schemaType(key string) Keyword {
 			if config.Kind() == reflect.String {
 				types = append(types, config.String())
 			} else {
-				for _, t := range config.Interface().([]any) {
-					types = append(types, t.(string))
+				for i := 0; i < config.Len(); i++ {
+					index := config.Index(i).Elem()
+					types = append(types, index.String())
 				}
 			}
 

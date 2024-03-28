@@ -36,16 +36,16 @@ func enum(key string) Keyword {
 				value = reflect.ValueOf(string(b))
 			}
 
-			for _, o := range config.Interface().([]any) {
-				option := reflect.Indirect(reflect.ValueOf(o))
+			for i := 0; i < config.Len(); i++ {
+				index := config.Index(i).Elem()
 
-				if !option.Comparable() {
-					b, _ := json.Marshal(option.Interface())
-					option = reflect.ValueOf(string(b))
+				if !index.Comparable() {
+					b, _ := json.Marshal(index.Interface())
+					index = reflect.ValueOf(string(b))
 				}
 
-				if value.Kind() == option.Kind() {
-					if value.Equal(option) {
+				if value.Kind() == index.Kind() {
+					if value.Equal(index) {
 						return errs
 					}
 				}

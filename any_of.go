@@ -10,9 +10,8 @@ func anyOf(key string) Keyword {
 	return Keyword{
 		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			schemas, ok := config.Interface().([]any)
 
-			if !ok {
+			if config.Kind() != reflect.Slice {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
@@ -22,11 +21,11 @@ func anyOf(key string) Keyword {
 				return errs
 			}
 
-			for i, s := range schemas {
+			for i := 0; i < config.Len(); i++ {
+				index := config.Index(i).Elem()
 				path := fmt.Sprintf("%s/%s/%d", ctx.Path, key, i)
-				schema, ok := s.(map[string]any)
 
-				if !ok {
+				if index.Kind() != reflect.Map {
 					errs = append(errs, SchemaError{
 						Path:    path,
 						Keyword: key,
@@ -36,7 +35,7 @@ func anyOf(key string) Keyword {
 					continue
 				}
 
-				_errs := ns.compile(path, schema)
+				_errs := ns.compile(path, index.Interface().(map[string]any))
 
 				if len(_errs) > 0 {
 					errs = append(errs, _errs...)
@@ -47,20 +46,23 @@ func anyOf(key string) Keyword {
 		},
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			schemas, ok := config.Interface().([]any)
 
-			if !ok {
+			if config.Kind() != reflect.Slice {
 				return errs
 			}
 
-			for _, s := range schemas {
-				schema, ok := s.(map[string]any)
+			for i := 0; i < config.Len(); i++ {
+				index := config.Index(i).Elem()
 
-				if !ok {
+				if index.Kind() != reflect.Map {
 					continue
 				}
 
-				_errs := ns.validate(ctx.Path, schema, value.Interface())
+				_errs := ns.validate(
+					ctx.Path,
+					index.Interface().(map[string]any),
+					value.Interface(),
+				)
 
 				if len(_errs) == 0 {
 					return errs

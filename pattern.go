@@ -40,11 +40,7 @@ func pattern(key string) Keyword {
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			if !value.IsValid() {
-				return errs
-			}
-
-			if value.Kind() != reflect.String {
+			if !value.IsValid() || value.Kind() != reflect.String {
 				return errs
 			}
 

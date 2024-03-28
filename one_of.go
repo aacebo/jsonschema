@@ -47,22 +47,20 @@ func oneOf(key string) Keyword {
 		},
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
-			schemas, ok := config.Interface().([]any)
-
-			if !ok {
-				return errs
-			}
-
 			valid := 0
 
-			for _, s := range schemas {
-				schema, ok := s.(map[string]any)
+			for i := 0; i < config.Len(); i++ {
+				index := config.Index(i).Elem()
 
-				if !ok {
+				if index.Kind() != reflect.Map {
 					continue
 				}
 
-				_errs := ns.validate(ctx.Path, schema, value.Interface())
+				_errs := ns.validate(
+					ctx.Path,
+					index.Interface().(map[string]any),
+					value.Interface(),
+				)
 
 				if len(_errs) == 0 {
 					valid++

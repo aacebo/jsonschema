@@ -39,15 +39,11 @@ func minItems(key string) Keyword {
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			if !value.IsValid() {
+			if !value.IsValid() || value.Kind() != reflect.Slice {
 				return errs
 			}
 
 			config = coerce.Int(config)
-
-			if value.Kind() != reflect.Slice {
-				return errs
-			}
 
 			if value.Len() < int(config.Int()) {
 				errs = append(errs, SchemaError{
