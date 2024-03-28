@@ -38,6 +38,7 @@ func New() *Namespace {
 			"enum":             enum("enum"),
 			"items":            items("items"),
 			"minItems":         minItems("minItems"),
+			"maxItems":         maxItems("maxItems"),
 			"additionalItems":  additionalItems("additionalItems"),
 			"anyOf":            anyOf("anyOf"),
 			"allOf":            allOf("allOf"),
