@@ -41,6 +41,7 @@ func New() *Namespace {
 			"allOf":            allOf,
 			"oneOf":            oneOf,
 			"not":              not,
+			"default":          _default,
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,
@@ -163,6 +164,11 @@ func (self *Namespace) compile(path string, schema Schema) []SchemaError {
 
 func (self *Namespace) validate(path string, schema Schema, value any) []SchemaError {
 	errs := []SchemaError{}
+	defaultValue, _ := schema["default"]
+
+	if value == nil {
+		value = defaultValue
+	}
 
 	for key, keyword := range self.keywords {
 		config, ok := schema[key]
