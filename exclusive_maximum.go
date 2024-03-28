@@ -7,6 +7,7 @@ import (
 
 // https://json-schema.org/understanding-json-schema/reference/numeric#range
 var exclusiveMaximum = Keyword{
+	Default: false,
 	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
 		_, ok := ctx.Value.(bool)
@@ -52,15 +53,6 @@ var exclusiveMaximum = Keyword{
 		value := reflect.Indirect(reflect.ValueOf(input))
 
 		if value.Kind() != reflect.Float64 {
-			errs = append(errs, SchemaError{
-				Path:    ctx.Path,
-				Keyword: "exclusiveMaximum",
-				Message: fmt.Sprintf(
-					`"%s" should be "float"`,
-					value.Kind().String(),
-				),
-			})
-
 			return errs
 		}
 

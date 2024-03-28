@@ -7,6 +7,7 @@ import (
 
 // https://json-schema.org/understanding-json-schema/reference/numeric#range
 var exclusiveMinimum = Keyword{
+	Default: false,
 	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
 		_, ok := ctx.Value.(bool)
@@ -40,15 +41,6 @@ var exclusiveMinimum = Keyword{
 		value := reflect.Indirect(reflect.ValueOf(input))
 
 		if value.Kind() != reflect.Float64 {
-			errs = append(errs, SchemaError{
-				Path:    ctx.Path,
-				Keyword: "exclusiveMinimum",
-				Message: fmt.Sprintf(
-					`"%s" should be "float"`,
-					value.Kind().String(),
-				),
-			})
-
 			return errs
 		}
 
