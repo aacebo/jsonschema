@@ -36,6 +36,7 @@ func New() *Namespace {
 			"exclusiveMaximum": exclusiveMaximum,
 			"enum":             enum,
 			"items":            items,
+			"additionalItems":  additionalItems,
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,
@@ -159,17 +160,21 @@ func (self *Namespace) compile(path string, schema Schema) []SchemaError {
 func (self *Namespace) validate(path string, schema Schema, value any) []SchemaError {
 	errs := []SchemaError{}
 
-	for key, svalue := range schema {
-		keyword, ok := self.keywords[key]
+	for key, keyword := range self.keywords {
+		config, ok := schema[key]
 
-		if !ok || svalue == nil || keyword.Validate == nil {
+		if !ok && keyword.Default != nil {
+			config = keyword.Default
+		}
+
+		if config == nil || keyword.Validate == nil {
 			continue
 		}
 
 		err := keyword.Validate(self, Context{
 			Path:   path,
 			Schema: schema,
-			Value:  svalue,
+			Value:  config,
 		}, value)
 
 		if len(err) > 0 {

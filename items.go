@@ -6,6 +6,7 @@ import (
 
 // https://json-schema.org/understanding-json-schema/reference/array#items
 var items = Keyword{
+	Default: Schema{},
 	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
 
@@ -22,6 +23,8 @@ var items = Keyword{
 						Keyword: "items",
 						Message: `must be a "Schema"`,
 					})
+
+					continue
 				}
 
 				_errs := ns.compile(fmt.Sprintf("%s/items/%d", ctx.Path, i), schema)
@@ -46,7 +49,11 @@ var items = Keyword{
 	},
 	Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
 		errs := []SchemaError{}
-		items := input.([]any)
+		items, ok := input.([]any)
+
+		if !ok {
+			return errs
+		}
 
 		switch v := ctx.Value.(type) {
 		case map[string]any:

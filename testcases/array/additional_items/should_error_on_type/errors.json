@@ -1,1 +1,1 @@
-["[/items/1/type] => should be type \"number\""]
+["[/1/type] => \"string\" should be one of [number]"]
