@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// https://json-schema.org/understanding-json-schema/reference/array#items
 var items = Keyword{
 	Compile: func(ns *Namespace, ctx Context) []SchemaError {
 		errs := []SchemaError{}
