@@ -27,6 +27,10 @@ func enum(key string) Keyword {
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
+			if !value.IsValid() {
+				return errs
+			}
+
 			if !value.Comparable() {
 				b, _ := json.Marshal(value.Interface())
 				value = reflect.ValueOf(string(b))

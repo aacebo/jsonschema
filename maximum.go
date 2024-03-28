@@ -43,6 +43,11 @@ func maximum(key string) Keyword {
 		},
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
+
+			if !value.IsValid() {
+				return errs
+			}
+
 			config = coerce.Float(config)
 			value = coerce.Float(value)
 

@@ -38,6 +38,11 @@ func minLength(key string) Keyword {
 		},
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
+
+			if !value.IsValid() {
+				return errs
+			}
+
 			config = coerce.Int(config)
 
 			if value.Kind() != reflect.String {
