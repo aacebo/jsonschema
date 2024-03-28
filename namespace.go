@@ -43,6 +43,7 @@ func New() *Namespace {
 			"not":              not,
 			"default":          _default,
 			"const":            _const,
+			"$comment":         comment,
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,
