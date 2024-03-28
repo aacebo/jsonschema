@@ -7,7 +7,7 @@ type Context struct {
 }
 
 type Keyword struct {
-	Default  any
-	Compile  func(ns *Namespace, ctx Context) []SchemaError
-	Validate func(ns *Namespace, ctx Context, input any) []SchemaError
+	Default  any                                                       // the default configuration of the keyword
+	Compile  func(ns *Namespace, ctx Context) []SchemaError            // used to validate the keywords configuration
+	Validate func(ns *Namespace, ctx Context, input any) []SchemaError // used to validate a value using the keyword
 }
