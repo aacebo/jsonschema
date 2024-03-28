@@ -10,9 +10,9 @@ func format(key string) Keyword {
 	return Keyword{
 		Compile: func(ns *Namespace, ctx Context) []SchemaError {
 			errs := []SchemaError{}
-			format, ok := ctx.Value.(string)
+			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 
-			if !ok {
+			if config.Kind() != reflect.String {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
@@ -22,13 +22,13 @@ func format(key string) Keyword {
 				return errs
 			}
 
-			if !ns.HasFormat(format) {
+			if !ns.HasFormat(config.String()) {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
 					Message: fmt.Sprintf(
 						`"%s" does not exist`,
-						format,
+						config.String(),
 					),
 				})
 			}
@@ -37,22 +37,14 @@ func format(key string) Keyword {
 		},
 		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
 			errs := []SchemaError{}
+			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 			value := reflect.Indirect(reflect.ValueOf(input))
 
 			if value.Kind() != reflect.String {
-				errs = append(errs, SchemaError{
-					Path:    ctx.Path,
-					Keyword: key,
-					Message: fmt.Sprintf(
-						`"%s" should be "string"`,
-						value.Kind().String(),
-					),
-				})
-
 				return errs
 			}
 
-			err := ns.Format(ctx.Value.(string), value.String())
+			err := ns.Format(config.String(), value.String())
 
 			if err != nil {
 				errs = append(errs, SchemaError{

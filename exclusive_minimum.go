@@ -11,26 +11,28 @@ func exclusiveMinimum(key string) Keyword {
 		Default: false,
 		Compile: func(ns *Namespace, ctx Context) []SchemaError {
 			errs := []SchemaError{}
-			_, ok := ctx.Value.(bool)
+			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 
-			if !ok {
-				_, ok = ctx.Value.(float64)
+			if config.Kind() == reflect.Bool {
+				minimum := reflect.Indirect(reflect.ValueOf(ctx.Schema["minimum"]))
 
-				if !ok {
+				if !minimum.IsValid() {
 					errs = append(errs, SchemaError{
 						Path:    ctx.Path,
 						Keyword: key,
-						Message: `must be a "bool" or "float"`,
+						Message: `"minimum" is required when "boolean"`,
 					})
 				}
 			} else {
-				_, ok := ctx.Schema["minimum"].(float64)
+				if !config.CanFloat() && config.CanConvert(reflect.TypeOf(0.0)) {
+					config = config.Convert(reflect.TypeOf(0.0))
+				}
 
-				if !ok {
+				if !config.CanFloat() {
 					errs = append(errs, SchemaError{
 						Path:    ctx.Path,
 						Keyword: key,
-						Message: `"minimum" is required when "bool"`,
+						Message: `must be a "boolean" or "number"`,
 					})
 				}
 			}
@@ -39,55 +41,73 @@ func exclusiveMinimum(key string) Keyword {
 		},
 		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
 			errs := []SchemaError{}
+			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 			value := reflect.Indirect(reflect.ValueOf(input))
 
-			if value.Kind() != reflect.Float64 {
+			if !value.IsValid() {
 				return errs
 			}
 
-			switch v := ctx.Value.(type) {
-			case bool:
-				if !v {
-					break
+			if !config.CanFloat() && config.CanConvert(reflect.TypeOf(0.0)) {
+				config = config.Convert(reflect.TypeOf(0.0))
+			}
+
+			if !value.CanFloat() && value.CanConvert(reflect.TypeOf(0.0)) {
+				value = value.Convert(reflect.TypeOf(0.0))
+			}
+
+			if !value.CanFloat() {
+				return errs
+			}
+
+			if config.Kind() == reflect.Bool {
+				if !config.Bool() {
+					return errs
 				}
 
-				minimum, _ := ctx.Schema["minimum"].(float64)
+				minimum := reflect.Indirect(reflect.ValueOf(ctx.Schema["minimum"]))
 
-				if value.Float() < minimum+1 {
+				if !minimum.IsValid() {
+					return errs
+				}
+
+				if !minimum.CanFloat() && minimum.CanConvert(reflect.TypeOf(0.0)) {
+					minimum = minimum.Convert(reflect.TypeOf(0.0))
+				}
+
+				if value.Float() < minimum.Float()+1 {
 					errs = append(errs, SchemaError{
 						Path:    ctx.Path,
 						Keyword: key,
 						Message: fmt.Sprintf(
 							`"%v" is less than "%v"`,
 							value.Float(),
-							minimum+1,
+							minimum.Float()+1,
 						),
 					})
 				}
+			} else if config.CanFloat() {
+				if !config.CanFloat() && config.CanConvert(reflect.TypeOf(0.0)) {
+					config = config.Convert(reflect.TypeOf(0.0))
+				}
 
-				break
-			case float64:
-				if value.Float() < v {
+				if value.Float() < config.Float() {
 					errs = append(errs, SchemaError{
 						Path:    ctx.Path,
 						Keyword: key,
 						Message: fmt.Sprintf(
 							`"%v" is less than "%v"`,
 							value.Float(),
-							v,
+							config.Float(),
 						),
 					})
 				}
-
-				break
-			default:
+			} else {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
-					Message: `must be a "bool" or "float"`,
+					Message: `must be a "boolean" or "number"`,
 				})
-
-				break
 			}
 
 			return errs

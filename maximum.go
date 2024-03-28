@@ -10,21 +10,33 @@ func maximum(key string) Keyword {
 	return Keyword{
 		Compile: func(ns *Namespace, ctx Context) []SchemaError {
 			errs := []SchemaError{}
-			maximum, ok := ctx.Value.(float64)
+			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 
-			if !ok {
+			if !config.CanFloat() && config.CanConvert(reflect.TypeOf(0.0)) {
+				config = config.Convert(reflect.TypeOf(0.0))
+			}
+
+			if !config.CanFloat() {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
-					Message: `must be a "float"`,
+					Message: `must be a "number"`,
 				})
 
 				return errs
 			}
 
-			minimum, ok := ctx.Schema["minimum"].(float64)
+			minimum := reflect.ValueOf(ctx.Schema["minimum"])
 
-			if ok && minimum > maximum {
+			if !minimum.IsValid() {
+				return errs
+			}
+
+			if !minimum.CanFloat() && minimum.CanConvert(reflect.TypeOf(0.0)) {
+				minimum = minimum.Convert(reflect.TypeOf(0.0))
+			}
+
+			if minimum.CanFloat() && minimum.Float() > config.Float() {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
@@ -36,29 +48,25 @@ func maximum(key string) Keyword {
 		},
 		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
 			errs := []SchemaError{}
+			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 			value := reflect.Indirect(reflect.ValueOf(input))
 
-			if value.Kind() != reflect.Float64 {
-				errs = append(errs, SchemaError{
-					Path:    ctx.Path,
-					Keyword: key,
-					Message: fmt.Sprintf(
-						`"%s" should be "number"`,
-						value.Kind().String(),
-					),
-				})
+			if !value.CanFloat() && value.CanConvert(reflect.TypeOf(0.0)) {
+				value = value.Convert(reflect.TypeOf(0.0))
+			}
 
+			if !value.CanFloat() {
 				return errs
 			}
 
-			if value.Float() > ctx.Value.(float64) {
+			if value.Float() > config.Float() {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
 					Message: fmt.Sprintf(
 						`"%v" is greater than "%v"`,
 						value.Float(),
-						ctx.Value.(float64),
+						config.Float(),
 					),
 				})
 			}

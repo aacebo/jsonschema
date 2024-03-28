@@ -10,19 +10,23 @@ func maxLength(key string) Keyword {
 	return Keyword{
 		Compile: func(ns *Namespace, ctx Context) []SchemaError {
 			errs := []SchemaError{}
-			fmaxLength, ok := ctx.Value.(float64)
+			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 
-			if !ok {
+			if !config.CanInt() && config.CanConvert(reflect.TypeOf(0)) {
+				config = config.Convert(reflect.TypeOf(0))
+			}
+
+			if !config.CanInt() {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
-					Message: `must be an "int"`,
+					Message: `must be an "integer"`,
 				})
 
 				return errs
 			}
 
-			maxLength := int(fmaxLength)
+			maxLength := config.Int()
 
 			if maxLength < 0 {
 				errs = append(errs, SchemaError{
@@ -32,9 +36,17 @@ func maxLength(key string) Keyword {
 				})
 			}
 
-			minLength, ok := ctx.Schema["minLength"].(float64)
+			minLength := reflect.ValueOf(ctx.Schema["minLength"])
 
-			if ok && int(minLength) > maxLength {
+			if !minLength.IsValid() {
+				return errs
+			}
+
+			if !minLength.CanInt() && minLength.CanConvert(reflect.TypeOf(0)) {
+				minLength = minLength.Convert(reflect.TypeOf(0))
+			}
+
+			if minLength.CanInt() && minLength.Int() > maxLength {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
@@ -46,29 +58,25 @@ func maxLength(key string) Keyword {
 		},
 		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
 			errs := []SchemaError{}
+			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 			value := reflect.Indirect(reflect.ValueOf(input))
 
 			if value.Kind() != reflect.String {
-				errs = append(errs, SchemaError{
-					Path:    ctx.Path,
-					Keyword: key,
-					Message: fmt.Sprintf(
-						`"%s" should be "string"`,
-						value.Kind().String(),
-					),
-				})
-
 				return errs
 			}
 
-			if value.Len() > int(ctx.Value.(float64)) {
+			if !config.CanInt() && config.CanConvert(reflect.TypeOf(0)) {
+				config = config.Convert(reflect.TypeOf(0))
+			}
+
+			if value.Len() > int(config.Int()) {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
 					Message: fmt.Sprintf(
 						`length "%d" is greater than "%d"`,
 						value.Len(),
-						int(ctx.Value.(float64)),
+						config.Int(),
 					),
 				})
 			}

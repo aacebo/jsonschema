@@ -11,9 +11,9 @@ func pattern(key string) Keyword {
 	return Keyword{
 		Compile: func(ns *Namespace, ctx Context) []SchemaError {
 			errs := []SchemaError{}
-			str, ok := ctx.Value.(string)
+			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 
-			if !ok {
+			if config.Kind() != reflect.String {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
@@ -23,7 +23,7 @@ func pattern(key string) Keyword {
 				return errs
 			}
 
-			_, err := regexp.Compile(str)
+			_, err := regexp.Compile(config.String())
 
 			if err != nil {
 				errs = append(errs, SchemaError{
@@ -31,7 +31,7 @@ func pattern(key string) Keyword {
 					Keyword: key,
 					Message: fmt.Sprintf(
 						`"%s" is not a valid regular expression`,
-						str,
+						config.String(),
 					),
 				})
 			}
@@ -40,22 +40,14 @@ func pattern(key string) Keyword {
 		},
 		Validate: func(ns *Namespace, ctx Context, input any) []SchemaError {
 			errs := []SchemaError{}
+			config := reflect.Indirect(reflect.ValueOf(ctx.Value))
 			value := reflect.Indirect(reflect.ValueOf(input))
 
 			if value.Kind() != reflect.String {
-				errs = append(errs, SchemaError{
-					Path:    ctx.Path,
-					Keyword: key,
-					Message: fmt.Sprintf(
-						`"%s" should be "string"`,
-						value.Kind().String(),
-					),
-				})
-
 				return errs
 			}
 
-			expr := regexp.MustCompile(ctx.Value.(string))
+			expr := regexp.MustCompile(config.String())
 
 			if !expr.MatchString(value.String()) {
 				errs = append(errs, SchemaError{
@@ -64,7 +56,7 @@ func pattern(key string) Keyword {
 					Message: fmt.Sprintf(
 						`"%s" does not match pattern "%s"`,
 						value.String(),
-						ctx.Value.(string),
+						config.String(),
 					),
 				})
 			}
