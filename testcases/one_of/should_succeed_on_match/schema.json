@@ -1,0 +1,15 @@
+{
+  "$id": "/oneOf/should_succeed_on_match",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "should succeed on match",
+  "oneOf": [
+    {
+      "type": "number",
+      "enum": [1, 2]
+    },
+    {
+      "type": "number",
+      "enum": [2, 3]
+    }
+  ]
+}
