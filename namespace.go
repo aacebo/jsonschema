@@ -90,7 +90,7 @@ func (self *Namespace) AddSchema(schema Schema) *Namespace {
 	return self
 }
 
-func (self *Namespace) AddKeyword(name string, keyword Keyword) *Namespace {
+func (self *Namespace) Keyword(name string, keyword Keyword) *Namespace {
 	self.keywords[name] = keyword
 	return self
 }
