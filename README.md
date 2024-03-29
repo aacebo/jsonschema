@@ -27,6 +27,7 @@ $: jsonschema **/*
 
 - schema builder pattern
 - cli
+- struct tags
 - keywords:
     - object
         - properties
