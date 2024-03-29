@@ -18,7 +18,11 @@ func contains(key string) Keyword {
 				return errs
 			}
 
-			return ns.compile(ctx.Path, config.Interface().(map[string]any))
+			return ns.compile(
+				ctx.ID,
+				ctx.Path,
+				config.Interface().(map[string]any),
+			)
 		},
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
@@ -30,6 +34,7 @@ func contains(key string) Keyword {
 			for i := 0; i < value.Len(); i++ {
 				index := value.Index(i).Elem()
 				_errs := ns.validate(
+					ctx.ID,
 					ctx.Path,
 					config.Interface().(map[string]any),
 					index.Interface(),

@@ -35,7 +35,11 @@ func allOf(key string) Keyword {
 					continue
 				}
 
-				_errs := ns.compile(path, index.Interface().(map[string]any))
+				_errs := ns.compile(
+					ctx.ID,
+					path,
+					index.Interface().(map[string]any),
+				)
 
 				if len(_errs) > 0 {
 					errs = append(errs, _errs...)
@@ -59,6 +63,7 @@ func allOf(key string) Keyword {
 				}
 
 				_errs := ns.validate(
+					ctx.ID,
 					ctx.Path,
 					index.Interface().(map[string]any),
 					value.Interface(),

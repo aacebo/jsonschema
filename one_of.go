@@ -36,7 +36,7 @@ func oneOf(key string) Keyword {
 					continue
 				}
 
-				_errs := ns.compile(path, schema)
+				_errs := ns.compile(ctx.ID, path, schema)
 
 				if len(_errs) > 0 {
 					errs = append(errs, _errs...)
@@ -57,6 +57,7 @@ func oneOf(key string) Keyword {
 				}
 
 				_errs := ns.validate(
+					ctx.ID,
 					ctx.Path,
 					index.Interface().(map[string]any),
 					value.Interface(),

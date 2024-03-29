@@ -5,8 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"jsonschema/formats"
+	"net/http"
+	"net/url"
 	"os"
 	"reflect"
+	"strconv"
+	"strings"
 )
 
 type Namespace struct {
@@ -49,6 +53,7 @@ func New() *Namespace {
 			"default":          _default("default"),
 			"const":            _const("const"),
 			"$comment":         comment("$comment"),
+			"$ref":             ref("$ref"),
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,
@@ -113,7 +118,7 @@ func (self *Namespace) Compile(id string) []SchemaError {
 		return []SchemaError{}
 	}
 
-	return self.compile("", schema)
+	return self.compile(schema.ID(), "", schema)
 }
 
 func (self *Namespace) Validate(id string, value any) []SchemaError {
@@ -123,7 +128,7 @@ func (self *Namespace) Validate(id string, value any) []SchemaError {
 		return []SchemaError{}
 	}
 
-	return self.validate("", schema, value)
+	return self.validate(schema.ID(), "", schema, value)
 }
 
 func (self *Namespace) Read(path string) (Schema, error) {
@@ -145,7 +150,76 @@ func (self *Namespace) Read(path string) (Schema, error) {
 	return schema, nil
 }
 
-func (self *Namespace) compile(path string, schema Schema) []SchemaError {
+func (self *Namespace) Resolve(id string, path string) (Schema, error) {
+	url, path, err := self.parseRef(id, path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	schema := self.GetSchema(url)
+
+	if schema == nil {
+		res, err := http.Get(url)
+
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.NewDecoder(res.Body).Decode(&schema)
+
+		if err != nil {
+			return nil, err
+		}
+
+		self.schemas[url] = schema
+	}
+
+	if path != "" {
+		var curr any = schema
+		parts := strings.Split(path, "/")
+
+		for _, part := range parts {
+			if part == "" || part == "#" {
+				continue
+			}
+
+			switch v := curr.(type) {
+			case Schema:
+				curr = v[part]
+				break
+			case map[string]any:
+				curr = v[part]
+				break
+			case []any:
+				i, err := strconv.Atoi(part)
+
+				if err != nil {
+					return nil, err
+				}
+
+				curr = v[i]
+				break
+			default:
+				curr = nil
+				break
+			}
+
+			if curr == nil {
+				return nil, errors.New(fmt.Sprintf(
+					`ref path "%s" not found`,
+					path,
+				))
+			}
+		}
+
+		schema = curr.(map[string]any)
+	}
+
+	return schema, nil
+}
+
+func (self *Namespace) compile(id string, path string, schema Schema) []SchemaError {
 	errs := []SchemaError{}
 
 	for key, config := range schema {
@@ -157,7 +231,7 @@ func (self *Namespace) compile(path string, schema Schema) []SchemaError {
 
 		err := keyword.Compile(
 			self,
-			Context{path, schema},
+			Context{id, path, schema},
 			reflect.Indirect(reflect.ValueOf(config)),
 		)
 
@@ -169,7 +243,7 @@ func (self *Namespace) compile(path string, schema Schema) []SchemaError {
 	return errs
 }
 
-func (self *Namespace) validate(path string, schema Schema, value any) []SchemaError {
+func (self *Namespace) validate(id string, path string, schema Schema, value any) []SchemaError {
 	errs := []SchemaError{}
 	defaultValue, _ := schema["default"]
 
@@ -190,7 +264,7 @@ func (self *Namespace) validate(path string, schema Schema, value any) []SchemaE
 
 		err := keyword.Validate(
 			self,
-			Context{path, schema},
+			Context{id, path, schema},
 			reflect.Indirect(reflect.ValueOf(config)),
 			reflect.Indirect(reflect.ValueOf(value)),
 		)
@@ -201,4 +275,32 @@ func (self *Namespace) validate(path string, schema Schema, value any) []SchemaE
 	}
 
 	return errs
+}
+
+func (self *Namespace) parseRef(id string, path string) (string, string, error) {
+	if path == "" {
+		return id, "", nil
+	}
+
+	refURL, err := url.Parse(path)
+
+	if err != nil {
+		return "", "", err
+	}
+
+	if refURL.IsAbs() {
+		return path, "", nil
+	}
+
+	baseURL, err := url.Parse(id)
+
+	if err != nil {
+		return "", "", err
+	}
+
+	if strings.HasPrefix(refURL.String(), "#") {
+		return baseURL.String(), refURL.String(), nil
+	}
+
+	return baseURL.ResolveReference(refURL).String(), "", nil
 }

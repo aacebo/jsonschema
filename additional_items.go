@@ -61,6 +61,7 @@ func additionalItems(key string) Keyword {
 				for i := items.Len(); i < value.Len(); i++ {
 					index := value.Index(i)
 					_errs := ns.validate(
+						ctx.ID,
 						fmt.Sprintf("%s/%d", ctx.Path, i),
 						config.Interface().(map[string]any),
 						index.Interface(),

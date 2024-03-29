@@ -3,6 +3,7 @@ package jsonschema
 import "reflect"
 
 type Context struct {
+	ID     string
 	Path   string
 	Schema Schema
 }

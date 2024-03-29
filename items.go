@@ -15,6 +15,7 @@ func items(key string) Keyword {
 			switch config.Kind() {
 			case reflect.Map:
 				return ns.compile(
+					ctx.ID,
 					fmt.Sprintf("%s/%s", ctx.Path, key),
 					config.Interface().(map[string]any),
 				)
@@ -33,6 +34,7 @@ func items(key string) Keyword {
 					}
 
 					_errs := ns.compile(
+						ctx.ID,
 						fmt.Sprintf("%s/%s/%d", ctx.Path, key, i),
 						index.Interface().(map[string]any),
 					)
@@ -67,6 +69,7 @@ func items(key string) Keyword {
 				for i := 0; i < value.Len(); i++ {
 					index := value.Index(i).Elem()
 					_errs := ns.validate(
+						ctx.ID,
 						fmt.Sprintf("%s/%d", ctx.Path, i),
 						config.Interface().(map[string]any),
 						index.Interface(),
@@ -87,6 +90,7 @@ func items(key string) Keyword {
 					}
 
 					_errs := ns.validate(
+						ctx.ID,
 						fmt.Sprintf("%s/%d", ctx.Path, i),
 						index.Interface().(map[string]any),
 						value.Index(i).Interface(),
