@@ -26,6 +26,8 @@ func New() *Namespace {
 			"$id":              id("$id"),
 			"id":               id("id"),
 			"$schema":          schemaSpec("$schema"),
+			"$defs":            definitions("$defs"),
+			"definitions":      definitions("definitions"),
 			"type":             schemaType("type"),
 			"title":            title("title"),
 			"description":      description("description"),
