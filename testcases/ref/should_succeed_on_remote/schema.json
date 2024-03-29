@@ -1,0 +1,9 @@
+{
+  "$id": "/ref/should_succeed_on_remote",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "description": "should succeed on remote",
+  "items": {
+    "$ref": "https://raw.githubusercontent.com/aacebo/jsonschema/main/testcases/array/items/should_succeed_on_single/schema.json#/items"
+  }
+}

@@ -169,7 +169,7 @@ func (self *Namespace) Resolve(id string, path string) (Schema, error) {
 		err = json.NewDecoder(res.Body).Decode(&schema)
 
 		if err != nil {
-			return nil, err
+			return nil, errors.New("failed to parse remote schema to json")
 		}
 
 		self.schemas[url] = schema
@@ -289,7 +289,7 @@ func (self *Namespace) parseRef(id string, path string) (string, string, error) 
 	}
 
 	if refURL.IsAbs() {
-		return path, "", nil
+		return path, refURL.Fragment, nil
 	}
 
 	baseURL, err := url.Parse(id)

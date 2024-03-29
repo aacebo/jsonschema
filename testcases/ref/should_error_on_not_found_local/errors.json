@@ -1,1 +1,1 @@
-["[/items/$ref] => failed to resolve reference \"/ref/should_error_on_not_found_local#/additionalItems\""]
+["[/items/$ref] => ref path \"#/additionalItems\" not found"]

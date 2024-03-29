@@ -1,7 +1,6 @@
 package jsonschema
 
 import (
-	"fmt"
 	"reflect"
 )
 
@@ -27,10 +26,7 @@ func ref(key string) Keyword {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
-					Message: fmt.Sprintf(
-						`failed to resolve reference "%s"`,
-						ctx.ID+config.String(),
-					),
+					Message: err.Error(),
 				})
 			}
 
@@ -50,10 +46,7 @@ func ref(key string) Keyword {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
-					Message: fmt.Sprintf(
-						`failed to resolve reference "%s"`,
-						ctx.ID+config.String(),
-					),
+					Message: err.Error(),
 				})
 			}
 
