@@ -41,6 +41,7 @@ func New() *Namespace {
 			"maxItems":         maxItems("maxItems"),
 			"additionalItems":  additionalItems("additionalItems"),
 			"uniqueItems":      uniqueItems("uniqueItems"),
+			"contains":         contains("contains"),
 			"anyOf":            anyOf("anyOf"),
 			"allOf":            allOf("allOf"),
 			"oneOf":            oneOf("oneOf"),

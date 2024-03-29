@@ -8,7 +8,7 @@ import (
 // https://json-schema.org/understanding-json-schema/reference/array#items
 func items(key string) Keyword {
 	return Keyword{
-		Default: Schema{},
+		Default: map[string]any{},
 		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
