@@ -17,19 +17,34 @@ $: jsonschema **/*
 
 | Draft   | Status  |
 |---------|---------|
-| 4       | ⏳      |
-| 6       | ⏳      |
-| 7       | ⏳      |
+| 4       | ✅      |
+| 6       | ✅      |
+| 7       | ✅      |
 | 2019-09 | ⏳      |
 | 2020-12 | ⏳      |
 
 ## To Do
 
 - schema builder pattern
-- object schema
-- integer schema
-- export bundle
-- `enum` keyword
-- `$def` keyword
-- change `$ref` from schema to keyword
-    - props on `$ref` should extend referenced schema
+- keywords:
+    - object
+        - properties
+        - propertyNames
+        - patternProperties
+        - additionalProperties
+        - unevaluatedProperties
+        - minProperties
+        - maxProperties
+        - required
+    - array
+        - prefixItems
+        - unevaluatedItems
+        - minContains
+        - maxContains
+    - deprecated
+    - readOnly
+    - writeOnly
+    - examples
+    - contentMediaType
+    - contentEncoding
+    - if/then/else
