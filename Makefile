@@ -3,7 +3,7 @@ clean:
 	rm coverage.out
 
 build:
-	go build -o bin/generate ./generate
+	go build -o bin/jsonschema ./
 
 clean.build: clean build
 
