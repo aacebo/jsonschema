@@ -1,0 +1,4 @@
+[
+  "[/0/type] => \"string\" should be one of [number]",
+  "[/1/type] => \"float64\" should be one of [string]"
+]

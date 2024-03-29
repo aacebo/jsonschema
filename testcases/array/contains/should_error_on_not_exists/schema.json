@@ -1,0 +1,9 @@
+{
+  "$id": "/array/contains/should_error_on_not_exists",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "description": "should error on not exists",
+  "contains": {
+    "type": "number"
+  }
+}

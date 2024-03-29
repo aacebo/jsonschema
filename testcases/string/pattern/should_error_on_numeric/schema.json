@@ -1,0 +1,7 @@
+{
+  "$id": "/string/pattern/should_error_on_numeric",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "should error on numeric",
+  "type": "string",
+  "pattern": "^[0-9]*$"
+}

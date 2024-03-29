@@ -3,8 +3,7 @@ clean:
 	rm coverage.out
 
 build:
-	go build -o bin/cmd ./cmd
-	go build -o bin/4 ./drafts/4
+	go build -o bin/jsonschema ./
 
 clean.build: clean build
 
@@ -23,5 +22,5 @@ test.v:
 	go clean -testcache
 	go test ./... -cover -coverprofile=coverage.out -v
 
-cov:
+test.cov:
 	go tool cover -html=coverage.out

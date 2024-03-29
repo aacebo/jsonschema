@@ -1,0 +1,13 @@
+{
+  "$id": "/anyOf/should_succeed_on_match",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "should succeed on match",
+  "anyOf": [
+    {
+      "type": "string"
+    },
+    {
+      "type": "number"
+    }
+  ]
+}

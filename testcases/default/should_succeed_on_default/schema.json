@@ -1,0 +1,7 @@
+{
+  "$id": "/default/should_succeed_on_default",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "should succeed on default",
+  "type": "number",
+  "default": 10
+}

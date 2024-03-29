@@ -1,0 +1,6 @@
+{
+  "$id": "/enum/should_succeed_on_type",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "should succeed on type",
+  "enum": ["test", 1, { "hello": "world" }]
+}

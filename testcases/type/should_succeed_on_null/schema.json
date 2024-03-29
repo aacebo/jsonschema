@@ -1,0 +1,6 @@
+{
+  "$id": "/type/should_succeed_on_null",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "null",
+  "description": "should succeed on null"
+}

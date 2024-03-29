@@ -1,0 +1,9 @@
+{
+  "$id": "/array/contains/should_succeed_on_exists",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "description": "should succeed on exists",
+  "contains": {
+    "type": "number"
+  }
+}
