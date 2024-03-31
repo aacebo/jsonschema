@@ -37,7 +37,7 @@ func minProperties(key string) Keyword {
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			if !value.IsValid() || value.Kind() != reflect.Slice {
+			if !value.IsValid() || value.Kind() != reflect.Map {
 				return errs
 			}
 
