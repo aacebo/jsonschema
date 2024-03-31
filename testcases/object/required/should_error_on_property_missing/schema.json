@@ -1,0 +1,10 @@
+{
+  "$id": "/object/required/should_error_on_property_missing",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "should error on property missing",
+  "type": "object",
+  "properties": {
+    "a": { "type": "number" }
+  },
+  "required": ["b"]
+}

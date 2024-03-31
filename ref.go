@@ -38,7 +38,7 @@ func ref(key string) Keyword {
 
 			return errs
 		},
-		Validate: func(ns *Namespace, ctx Context, config, value reflect.Value) []SchemaError {
+		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 			schema, err := ns.Resolve(ctx.ID, config.String())
 

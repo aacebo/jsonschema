@@ -69,8 +69,6 @@ func additionalProperties(key string) Keyword {
 					}
 				}
 
-				fmt.Println(_key.String())
-
 				switch config.Kind() {
 				case reflect.Bool:
 					if !config.Bool() {
