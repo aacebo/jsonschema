@@ -50,7 +50,7 @@ func RunAll(path string, ns *jsonschema.Namespace, t *testing.T) {
 				return
 			}
 
-			errs = ns.Validate(testcase.Input, testcase.Schema)
+			errs = ns.Validate(testcase.Schema, testcase.Input)
 
 			if fmt.Sprint(testcase.Errors) != fmt.Sprint(errs) {
 				t.Log(testcase.Schema)

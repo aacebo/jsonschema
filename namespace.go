@@ -28,9 +28,17 @@ func New() *Namespace {
 			"$schema":              dialect,
 			"$defs":                definitions,
 			"definitions":          definitions,
+			"$comment":             comment,
+			"$ref":                 ref,
 			"type":                 schemaType,
 			"title":                title,
 			"description":          description,
+			"anyOf":                anyOf,
+			"allOf":                allOf,
+			"oneOf":                oneOf,
+			"not":                  not,
+			"default":              _default,
+			"const":                _const,
 			"dependencies":         dependencies,
 			"pattern":              pattern,
 			"format":               format,
@@ -55,14 +63,6 @@ func New() *Namespace {
 			"minProperties":        minProperties,
 			"maxProperties":        maxProperties,
 			"required":             required,
-			"anyOf":                anyOf,
-			"allOf":                allOf,
-			"oneOf":                oneOf,
-			"not":                  not,
-			"default":              _default,
-			"const":                _const,
-			"$comment":             comment,
-			"$ref":                 ref,
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,
@@ -134,7 +134,7 @@ func (self *Namespace) Compile(schema Schema) []SchemaError {
 	return self.compile(id, "", schema)
 }
 
-func (self *Namespace) Validate(value any, schema Schema) []SchemaError {
+func (self *Namespace) Validate(schema Schema, value any) []SchemaError {
 	id := schema.ID()
 	schema, ok := self.schemas[id]
 
