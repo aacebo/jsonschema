@@ -51,6 +51,7 @@ func New() *Namespace {
 			"properties":           properties("properties"),
 			"patternProperties":    patternProperties("patternProperties"),
 			"additionalProperties": additionalProperties("additionalProperties"),
+			"propertyNames":        propertyNames("propertyNames"),
 			"required":             required("required"),
 			"anyOf":                anyOf("anyOf"),
 			"allOf":                allOf("allOf"),

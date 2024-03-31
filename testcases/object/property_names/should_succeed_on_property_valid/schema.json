@@ -1,0 +1,9 @@
+{
+  "$id": "/object/property_names/should_succeed_on_property_valid",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "should succeed on property valid",
+  "type": "object",
+  "propertyNames": {
+    "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+  }
+}

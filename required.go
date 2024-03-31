@@ -8,6 +8,7 @@ import (
 // https://json-schema.org/understanding-json-schema/reference/object#required
 func required(key string) Keyword {
 	return Keyword{
+		Default: []string{},
 		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
