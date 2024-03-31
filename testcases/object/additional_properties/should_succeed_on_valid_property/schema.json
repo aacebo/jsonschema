@@ -1,0 +1,12 @@
+{
+  "$id": "/object/additional_properties/should_succeed_on_valid_property",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "should succeed on valid property",
+  "type": "object",
+  "properties": {
+    "a": { "type": "string" }
+  },
+  "additionalProperties": {
+    "type": "number"
+  }
+}
