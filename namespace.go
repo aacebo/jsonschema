@@ -53,6 +53,7 @@ func New() *Namespace {
 			"additionalProperties": additionalProperties,
 			"propertyNames":        propertyNames,
 			"minProperties":        minProperties,
+			"maxProperties":        maxProperties,
 			"required":             required,
 			"anyOf":                anyOf,
 			"allOf":                allOf,

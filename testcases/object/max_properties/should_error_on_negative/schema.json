@@ -1,0 +1,7 @@
+{
+  "$id": "/object/max_properties/should_error_on_negative",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "should error",
+  "maxProperties": -1
+}

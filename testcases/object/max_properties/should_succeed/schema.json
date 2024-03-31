@@ -1,0 +1,7 @@
+{
+  "$id": "/object/max_properties/should_succeed",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "should succeed",
+  "maxProperties": 2
+}

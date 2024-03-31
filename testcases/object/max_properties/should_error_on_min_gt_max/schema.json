@@ -1,0 +1,8 @@
+{
+  "$id": "/object/max_properties/should_error_on_min_gt_max",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "should error",
+  "minProperties": 5,
+  "maxProperties": 2
+}
