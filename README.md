@@ -28,6 +28,7 @@ $: jsonschema **/*
 - schema builder pattern
 - cli
 - struct tags
+- add message keyword for custom error messages
 - keywords:
     - object
         - properties

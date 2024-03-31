@@ -25,7 +25,7 @@ func New() *Namespace {
 		keywords: map[string]func(string) Keyword{
 			"$id":                  id,
 			"id":                   id,
-			"$schema":              schemaSpec,
+			"$schema":              dialect,
 			"$defs":                definitions,
 			"definitions":          definitions,
 			"type":                 schemaType,

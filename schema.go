@@ -18,7 +18,7 @@ func (self Schema) ID() string {
 	return ""
 }
 
-func (self Schema) Spec() string {
+func (self Schema) Schema() string {
 	if v, ok := self["$schema"]; ok {
 		return v.(string)
 	}
