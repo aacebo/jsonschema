@@ -123,24 +123,26 @@ func (self *Namespace) Keyword(name string, keyword Keyword) *Namespace {
 	return self
 }
 
-func (self *Namespace) Compile(id string) []SchemaError {
-	schema, ok := self.schemas[id]
+func (self *Namespace) Compile(schema Schema) []SchemaError {
+	id := schema.ID()
+	_, ok := self.schemas[id]
 
 	if !ok {
-		return []SchemaError{}
+		self.schemas[id] = schema
 	}
 
-	return self.compile(schema.ID(), "", schema)
+	return self.compile(id, "", schema)
 }
 
-func (self *Namespace) Validate(id string, value any) []SchemaError {
+func (self *Namespace) Validate(value any, schema Schema) []SchemaError {
+	id := schema.ID()
 	schema, ok := self.schemas[id]
 
 	if !ok {
-		return []SchemaError{}
+		self.schemas[id] = schema
 	}
 
-	return self.validate(schema.ID(), "", schema, value)
+	return self.validate(id, "", schema, value)
 }
 
 func (self *Namespace) Read(path string) (Schema, error) {

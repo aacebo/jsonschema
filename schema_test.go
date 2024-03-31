@@ -38,8 +38,7 @@ func RunAll(path string, ns *jsonschema.Namespace, t *testing.T) {
 		}
 
 		t.Run(title, func(t *testing.T) {
-			ns := ns.AddSchema(testcase.Schema)
-			errs := ns.Compile(id)
+			errs := ns.Compile(testcase.Schema)
 
 			if len(errs) > 0 {
 				if fmt.Sprint(testcase.Errors) != fmt.Sprint(errs) {
@@ -51,7 +50,7 @@ func RunAll(path string, ns *jsonschema.Namespace, t *testing.T) {
 				return
 			}
 
-			errs = ns.Validate(id, testcase.Input)
+			errs = ns.Validate(testcase.Input, testcase.Schema)
 
 			if fmt.Sprint(testcase.Errors) != fmt.Sprint(errs) {
 				t.Log(testcase.Schema)
