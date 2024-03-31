@@ -24,9 +24,7 @@ func minItems(key string) Keyword {
 				return errs
 			}
 
-			minLength := config.Int()
-
-			if minLength < 0 {
+			if config.Int() < 0 {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,

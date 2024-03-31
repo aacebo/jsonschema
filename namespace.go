@@ -15,52 +15,53 @@ import (
 
 type Namespace struct {
 	schemas  map[string]Schema
-	keywords map[string]Keyword
+	keywords map[string]func(string) Keyword
 	formats  map[string]Formatter
 }
 
 func New() *Namespace {
 	return &Namespace{
 		schemas: map[string]Schema{},
-		keywords: map[string]Keyword{
-			"$id":                  id("$id"),
-			"id":                   id("id"),
-			"$schema":              schemaSpec("$schema"),
-			"$defs":                definitions("$defs"),
-			"definitions":          definitions("definitions"),
-			"type":                 schemaType("type"),
-			"title":                title("title"),
-			"description":          description("description"),
-			"dependencies":         dependencies("dependencies"),
-			"pattern":              pattern("pattern"),
-			"format":               format("format"),
-			"minLength":            minLength("minLength"),
-			"maxLength":            maxLength("maxLength"),
-			"multipleOf":           multipleOf("multipleOf"),
-			"minimum":              minimum("minimum"),
-			"maximum":              maximum("maximum"),
-			"exclusiveMinimum":     exclusiveMinimum("exclusiveMinimum"),
-			"exclusiveMaximum":     exclusiveMaximum("exclusiveMaximum"),
-			"enum":                 enum("enum"),
-			"items":                items("items"),
-			"minItems":             minItems("minItems"),
-			"maxItems":             maxItems("maxItems"),
-			"additionalItems":      additionalItems("additionalItems"),
-			"uniqueItems":          uniqueItems("uniqueItems"),
-			"contains":             contains("contains"),
-			"properties":           properties("properties"),
-			"patternProperties":    patternProperties("patternProperties"),
-			"additionalProperties": additionalProperties("additionalProperties"),
-			"propertyNames":        propertyNames("propertyNames"),
-			"required":             required("required"),
-			"anyOf":                anyOf("anyOf"),
-			"allOf":                allOf("allOf"),
-			"oneOf":                oneOf("oneOf"),
-			"not":                  not("not"),
-			"default":              _default("default"),
-			"const":                _const("const"),
-			"$comment":             comment("$comment"),
-			"$ref":                 ref("$ref"),
+		keywords: map[string]func(string) Keyword{
+			"$id":                  id,
+			"id":                   id,
+			"$schema":              schemaSpec,
+			"$defs":                definitions,
+			"definitions":          definitions,
+			"type":                 schemaType,
+			"title":                title,
+			"description":          description,
+			"dependencies":         dependencies,
+			"pattern":              pattern,
+			"format":               format,
+			"minLength":            minLength,
+			"maxLength":            maxLength,
+			"multipleOf":           multipleOf,
+			"minimum":              minimum,
+			"maximum":              maximum,
+			"exclusiveMinimum":     exclusiveMinimum,
+			"exclusiveMaximum":     exclusiveMaximum,
+			"enum":                 enum,
+			"items":                items,
+			"minItems":             minItems,
+			"maxItems":             maxItems,
+			"additionalItems":      additionalItems,
+			"uniqueItems":          uniqueItems,
+			"contains":             contains,
+			"properties":           properties,
+			"patternProperties":    patternProperties,
+			"additionalProperties": additionalProperties,
+			"propertyNames":        propertyNames,
+			"minProperties":        minProperties,
+			"required":             required,
+			"anyOf":                anyOf,
+			"allOf":                allOf,
+			"oneOf":                oneOf,
+			"not":                  not,
+			"default":              _default,
+			"const":                _const,
+			"$comment":             comment,
+			"$ref":                 ref,
 		},
 		formats: map[string]Formatter{
 			"date-time": formats.DateTime,
@@ -114,7 +115,10 @@ func (self *Namespace) AddSchema(schema Schema) *Namespace {
 }
 
 func (self *Namespace) Keyword(name string, keyword Keyword) *Namespace {
-	self.keywords[name] = keyword
+	self.keywords[name] = func(_ string) Keyword {
+		return keyword
+	}
+
 	return self
 }
 
@@ -230,9 +234,15 @@ func (self *Namespace) compile(id string, path string, schema Schema) []SchemaEr
 	errs := []SchemaError{}
 
 	for key, config := range schema {
-		keyword, ok := self.keywords[key]
+		factory, ok := self.keywords[key]
 
-		if !ok || config == nil || keyword.Compile == nil {
+		if !ok || config == nil {
+			continue
+		}
+
+		keyword := factory(key)
+
+		if keyword.Compile == nil {
 			continue
 		}
 
@@ -258,7 +268,8 @@ func (self *Namespace) validate(id string, path string, schema Schema, value any
 		value = defaultValue
 	}
 
-	for key, keyword := range self.keywords {
+	for key, factory := range self.keywords {
+		keyword := factory(key)
 		config, ok := schema[key]
 
 		if !ok && keyword.Default != nil {

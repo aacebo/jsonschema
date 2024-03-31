@@ -6,8 +6,8 @@ import (
 	"reflect"
 )
 
-// https://json-schema.org/understanding-json-schema/reference/string#length
-func minLength(key string) Keyword {
+// https://json-schema.org/understanding-json-schema/reference/object#length
+func minProperties(key string) Keyword {
 	return Keyword{
 		Default: 0,
 		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
@@ -37,7 +37,7 @@ func minLength(key string) Keyword {
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			if !value.IsValid() || value.Kind() != reflect.String {
+			if !value.IsValid() || value.Kind() != reflect.Slice {
 				return errs
 			}
 

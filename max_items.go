@@ -23,9 +23,9 @@ func maxItems(key string) Keyword {
 				return errs
 			}
 
-			maxLength := config.Int()
+			maxItems := config.Int()
 
-			if maxLength < 0 {
+			if maxItems < 0 {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
@@ -41,7 +41,7 @@ func maxItems(key string) Keyword {
 
 			minItems = coerce.Int(minItems)
 
-			if minItems.CanInt() && minItems.Int() > maxLength {
+			if minItems.CanInt() && minItems.Int() > maxItems {
 				errs = append(errs, SchemaError{
 					Path:    ctx.Path,
 					Keyword: key,
