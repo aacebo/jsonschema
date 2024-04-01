@@ -24,3 +24,7 @@ test.v:
 
 test.cov:
 	go tool cover -html=coverage.out
+
+test.bench:
+	go clean -testcache
+	go test ./... -bench=.

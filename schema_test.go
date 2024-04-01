@@ -61,6 +61,51 @@ func RunAll(path string, ns *jsonschema.Namespace, t *testing.T) {
 	}
 }
 
+func RunAllBench(path string, ns *jsonschema.Namespace, b *testing.B) {
+	cases, err := readAll(path, ns)
+
+	if err != nil {
+		b.Error(err)
+	}
+
+	for _, testcase := range cases {
+		id := testcase.Schema.ID()
+
+		if id == "" {
+			b.Log(testcase.Schema)
+			b.Error(`test schemas "id" is required`)
+		}
+
+		title := id
+
+		if strings.HasPrefix(title, "/") {
+			title = title[1:]
+		}
+
+		b.Run(title, func(t *testing.B) {
+			errs := ns.Compile(testcase.Schema)
+
+			if len(errs) > 0 {
+				if fmt.Sprint(testcase.Errors) != fmt.Sprint(errs) {
+					t.Log(testcase.Schema)
+					t.Logf(`expected: "%v"`, testcase.Errors)
+					t.Errorf(`received: "%v"`, errs)
+				}
+
+				return
+			}
+
+			errs = ns.Validate(testcase.Schema, testcase.Input)
+
+			if fmt.Sprint(testcase.Errors) != fmt.Sprint(errs) {
+				t.Log(testcase.Schema)
+				t.Logf(`expected: "%v"`, testcase.Errors)
+				t.Errorf(`received: "%v"`, errs)
+			}
+		})
+	}
+}
+
 func readAll(path string, ns *jsonschema.Namespace) ([]testcase, error) {
 	cases := []testcase{}
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
