@@ -136,7 +136,7 @@ func (self *Namespace) Compile(schema Schema) []SchemaError {
 
 func (self *Namespace) Validate(schema Schema, value any) []SchemaError {
 	id := schema.ID()
-	schema, ok := self.schemas[id]
+	_, ok := self.schemas[id]
 
 	if !ok {
 		self.schemas[id] = schema
