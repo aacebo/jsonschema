@@ -3,6 +3,8 @@ package jsonschema
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/aacebo/jsonschema/coerce"
 )
 
 // https://json-schema.org/understanding-json-schema/structuring#defs
@@ -32,6 +34,8 @@ func definitions(key string) Keyword {
 				if value.Kind() == reflect.Pointer || value.Kind() == reflect.Interface {
 					value = value.Elem()
 				}
+
+				value = coerce.Map(value)
 
 				if value.Kind() != reflect.Map {
 					errs = append(errs, SchemaError{

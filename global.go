@@ -11,7 +11,7 @@ func AddFormat(name string, format Formatter) {
 }
 
 func AddKeyword(name string, keyword Keyword) {
-	namespace.Keyword(name, keyword)
+	namespace.AddKeyword(name, keyword)
 }
 
 func Compile(schema Schema) []SchemaError {

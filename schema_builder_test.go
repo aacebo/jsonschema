@@ -51,6 +51,34 @@ func TestSchemaBuilder(t *testing.T) {
 		})
 	})
 
+	t.Run("struct", func(t *testing.T) {
+		t.Run("should succeed", func(t *testing.T) {
+			schema := jsonschema.Builder().
+				Object().
+				Properties(map[string]jsonschema.Schema{
+					"test": jsonschema.Builder().String().Build(),
+				}).
+				AdditionalProperties(jsonschema.Builder().Number().Build()).
+				Required("test").
+				Build()
+
+			errs := jsonschema.Compile(schema)
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+
+			errs = jsonschema.Validate(schema, struct {
+				Test  string `json:"test"`
+				Other string `json:"other"`
+			}{"test", "1"})
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+		})
+	})
+
 	t.Run("custom", func(t *testing.T) {
 		jsonschema.AddKeyword("test", jsonschema.Keyword{
 			Compile: func(ns *jsonschema.Namespace, ctx jsonschema.Context, config reflect.Value) []jsonschema.SchemaError {

@@ -116,7 +116,7 @@ func (self *Namespace) AddSchema(schema Schema) *Namespace {
 	return self
 }
 
-func (self *Namespace) Keyword(name string, keyword Keyword) *Namespace {
+func (self *Namespace) AddKeyword(name string, keyword Keyword) *Namespace {
 	self.keywords[name] = func(_ string) Keyword {
 		return keyword
 	}
@@ -240,7 +240,17 @@ func (self *Namespace) compile(id string, path string, schema Schema) []SchemaEr
 	for key, config := range schema {
 		factory, ok := self.keywords[key]
 
-		if !ok || config == nil {
+		if !ok {
+			errs = append(errs, SchemaError{
+				Path:    path,
+				Keyword: key,
+				Message: "invalid keyword",
+			})
+
+			continue
+		}
+
+		if config == nil {
 			continue
 		}
 

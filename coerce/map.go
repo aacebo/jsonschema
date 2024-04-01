@@ -5,7 +5,7 @@ import "reflect"
 var MAP_TYPE = reflect.TypeOf(map[string]any{})
 
 func Map(value reflect.Value) reflect.Value {
-	if value.IsValid() && value.Kind() != reflect.Map && value.CanConvert(MAP_TYPE) {
+	if value.IsValid() && value.CanConvert(MAP_TYPE) {
 		value = value.Convert(MAP_TYPE)
 	}
 
