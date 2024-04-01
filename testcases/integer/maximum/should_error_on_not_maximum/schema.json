@@ -1,0 +1,7 @@
+{
+  "$id": "/integer/maximum/should_error_on_not_maximum",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "integer",
+  "description": "should error on not maximum",
+  "maximum": 9
+}

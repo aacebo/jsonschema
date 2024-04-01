@@ -1,0 +1,7 @@
+{
+  "$id": "/integer/multiple_of/should_error_on_negative",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "integer",
+  "description": "should error negative",
+  "multipleOf": -1
+}

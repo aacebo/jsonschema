@@ -1,0 +1,7 @@
+{
+  "$id": "/integer/multiple_of/should_succeed_on_multiple",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "integer",
+  "description": "should succeed on multiple",
+  "multipleOf": 10
+}

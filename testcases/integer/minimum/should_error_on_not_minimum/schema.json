@@ -1,0 +1,7 @@
+{
+  "$id": "/integer/minimum/should_error_on_not_minimum",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "integer",
+  "description": "should error on not minimum",
+  "minimum": 10
+}

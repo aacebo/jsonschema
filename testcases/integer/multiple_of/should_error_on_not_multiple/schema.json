@@ -1,0 +1,7 @@
+{
+  "$id": "/integer/multiple_of/should_error_on_not_multiple",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "integer",
+  "description": "should error on not multiple",
+  "multipleOf": 10
+}

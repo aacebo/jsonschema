@@ -1,0 +1,7 @@
+{
+  "$id": "/integer/maximum/should_succeed_on_maximum",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "integer",
+  "description": "should succeed on maximum",
+  "maximum": 20
+}

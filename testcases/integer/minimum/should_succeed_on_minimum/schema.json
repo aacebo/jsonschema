@@ -1,0 +1,7 @@
+{
+  "$id": "/integer/minimum/should_succeed_on_minimum",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "integer",
+  "description": "should succeed on minimum",
+  "minimum": 10
+}

@@ -1,0 +1,8 @@
+{
+  "$id": "/integer/minimum/should_succeed_on_exclusive",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "integer",
+  "description": "should error on exclusive",
+  "minimum": 10,
+  "exclusiveMinimum": true
+}

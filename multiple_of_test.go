@@ -7,4 +7,5 @@ import (
 
 func TestMultipleOf(t *testing.T) {
 	RunAll("./testcases/number/multiple_of", jsonschema.New(), t)
+	RunAll("./testcases/integer/multiple_of", jsonschema.New(), t)
 }
