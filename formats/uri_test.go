@@ -1,8 +1,9 @@
 package formats_test
 
 import (
-	"jsonschema/formats"
 	"testing"
+
+	"github.com/aacebo/jsonschema/formats"
 )
 
 func TestURI(t *testing.T) {

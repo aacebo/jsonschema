@@ -2,9 +2,10 @@ package jsonschema_test
 
 import (
 	"fmt"
-	"jsonschema"
 	"reflect"
 	"testing"
+
+	"github.com/aacebo/jsonschema"
 )
 
 func TestSchemaBuilder(t *testing.T) {

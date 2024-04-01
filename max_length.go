@@ -2,8 +2,9 @@ package jsonschema
 
 import (
 	"fmt"
-	"jsonschema/coerce"
 	"reflect"
+
+	"github.com/aacebo/jsonschema/coerce"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/string#length

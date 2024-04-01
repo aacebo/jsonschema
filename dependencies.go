@@ -1,8 +1,9 @@
 package jsonschema
 
 import (
-	"jsonschema/coerce"
 	"reflect"
+
+	"github.com/aacebo/jsonschema/coerce"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/conditionals#dependentRequired

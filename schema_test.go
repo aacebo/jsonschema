@@ -3,11 +3,12 @@ package jsonschema_test
 import (
 	"encoding/json"
 	"fmt"
-	"jsonschema"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/aacebo/jsonschema"
 )
 
 type testcase struct {

@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"jsonschema/formats"
 	"net/http"
 	"net/url"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/aacebo/jsonschema/formats"
 )
 
 type Namespace struct {

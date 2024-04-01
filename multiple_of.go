@@ -2,9 +2,10 @@ package jsonschema
 
 import (
 	"fmt"
-	"jsonschema/coerce"
 	"math"
 	"reflect"
+
+	"github.com/aacebo/jsonschema/coerce"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/numeric#multiples

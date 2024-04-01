@@ -1,8 +1,9 @@
 package formats_test
 
 import (
-	"jsonschema/formats"
 	"testing"
+
+	"github.com/aacebo/jsonschema/formats"
 )
 
 func TestIPv6(t *testing.T) {

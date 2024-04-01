@@ -1,8 +1,9 @@
 package jsonschema_test
 
 import (
-	"jsonschema"
 	"testing"
+
+	"github.com/aacebo/jsonschema"
 )
 
 func TestRef(t *testing.T) {
