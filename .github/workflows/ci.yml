@@ -29,3 +29,9 @@ jobs:
         run: make build
       - name: Test
         run: make test
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: aacebo/jsonschema
+          files: converage.out
