@@ -23,6 +23,14 @@ $: jsonschema **/*
 | 2019-09 | ⏳      |
 | 2020-12 | ⏳      |
 
+## Features
+
+| Name                  | Status    |
+|-----------------------|-----------|
+| Custom Keywords       | ✅        |
+| Custom Error Messages | ⏳        |
+| Custom Formats        | ✅        |
+
 ## To Do
 
 - schema builder pattern
@@ -31,14 +39,7 @@ $: jsonschema **/*
 - add message keyword for custom error messages
 - keywords:
     - object
-        - properties
-        - propertyNames
-        - patternProperties
-        - additionalProperties
         - unevaluatedProperties
-        - minProperties
-        - maxProperties
-        - required
     - array
         - prefixItems
         - unevaluatedItems
