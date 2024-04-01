@@ -3,7 +3,6 @@ package jsonschema
 import (
 	"fmt"
 	"reflect"
-	"slices"
 )
 
 type SchemaType string
@@ -39,23 +38,25 @@ func (self SchemaType) Valid() bool {
 	return false
 }
 
-func (self SchemaType) Kinds() []reflect.Kind {
+func (self SchemaType) Match(value reflect.Value) bool {
+	kind := value.Kind()
+
 	switch self {
 	case SCHEMA_TYPE_ARRAY:
-		return []reflect.Kind{reflect.Slice, reflect.Array}
+		return kind == reflect.Array || kind == reflect.Slice
 	case SCHEMA_TYPE_BOOLEAN:
-		return []reflect.Kind{reflect.Bool}
+		return kind == reflect.Bool
 	case SCHEMA_TYPE_INTEGER:
-		return []reflect.Kind{reflect.Int, reflect.Float32, reflect.Float64}
+		return kind == reflect.Int || (value.CanFloat() && float64(int64(value.Float())) == value.Float())
 	case SCHEMA_TYPE_NUMBER:
-		return []reflect.Kind{reflect.Int, reflect.Float32, reflect.Float64}
+		return kind == reflect.Int || kind == reflect.Float32 || kind == reflect.Float64
 	case SCHEMA_TYPE_OBJECT:
-		return []reflect.Kind{reflect.String, reflect.Map}
+		return kind == reflect.Map || kind == reflect.Struct
 	case SCHEMA_TYPE_STRING:
-		return []reflect.Kind{reflect.String}
+		return kind == reflect.String
 	}
 
-	return []reflect.Kind{reflect.Invalid}
+	return kind == reflect.Invalid
 }
 
 // https://json-schema.org/understanding-json-schema/reference/type
@@ -121,7 +122,7 @@ func schemaType(key string) Keyword {
 			}
 
 			for _, t := range types {
-				if slices.Contains(SchemaType(t).Kinds(), value.Kind()) {
+				if SchemaType(t).Match(value) {
 					return errs
 				}
 			}
