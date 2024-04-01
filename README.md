@@ -4,6 +4,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/aacebo/jsonschema.svg)](https://pkg.go.dev/github.com/aacebo/jsonschema)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aacebo/jsonschema)](https://goreportcard.com/report/github.com/aacebo/jsonschema)
 [![Build Status](https://github.com/aacebo/jsonschema/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/aacebo/jsonschema/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/aacebo/jsonschema/graph/badge.svg?token=ZFJMM1BZVM)](https://codecov.io/gh/aacebo/jsonschema)
 
 a zero dependency jsonschema implementation
 
