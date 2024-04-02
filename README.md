@@ -8,6 +8,76 @@
 
 a zero dependency jsonschema implementation
 
+## Usage
+
+### Files
+
+```go
+schema, err := jsonschema.Read("./schema.json")
+
+if err != nil {
+    panic(err)
+}
+
+errs := jsonschema.Compile(schema)
+
+if len(errs) > 0 {
+    panic(errs)
+}
+```
+
+### Builder
+
+```go
+schema := jsonschema.Builder().
+    Object().
+    Properties(map[string]jsonschema.Schema{
+        "test": jsonschema.Builder().String().Build(),
+    }).
+    AdditionalProperties(jsonschema.Builder().Integer().Build()).
+    Required("test").
+    Build()
+
+errs := jsonschema.Compile(schema)
+
+if len(errs) > 0 {
+    panic(errs)
+}
+
+errs = jsonschema.Validate(schema, struct {
+    Test  string `json:"test"`
+    Other int    `json:"other"`
+}{"test", 1})
+
+if len(errs) > 0 {
+    panic(errs)
+}
+```
+
+### Non-Global Namespace
+
+```go
+namespace := jsonschema.New()
+```
+
+### Custom Keywords
+
+```go
+jsonschema.AddKeyword("alphaNum", jsonschema.Keyword{ ... })
+```
+
+### Custom Formats
+
+```go
+jsonschema.AddFormat("lowercase", func(input string) error {
+    if strings.ToLower(input) == input {
+        return errors.New("must be lowercase")
+    }
+
+    return nil
+})
+```
+
 ## CLI
 
 ```bash
