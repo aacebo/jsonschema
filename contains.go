@@ -1,12 +1,17 @@
 package jsonschema
 
-import "reflect"
+import (
+	"reflect"
+
+	"github.com/aacebo/jsonschema/coerce"
+)
 
 // https://json-schema.org/understanding-json-schema/reference/array#contains
 func contains(key string) Keyword {
 	return Keyword{
 		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
+			config = coerce.Map(config)
 
 			if config.Kind() != reflect.Map {
 				errs = append(errs, SchemaError{
@@ -30,6 +35,8 @@ func contains(key string) Keyword {
 			if !value.IsValid() || (value.Kind() != reflect.Slice && value.Kind() != reflect.Array) {
 				return errs
 			}
+
+			config = coerce.Map(config)
 
 			for i := 0; i < value.Len(); i++ {
 				index := value.Index(i).Elem()
