@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"strings"
+
+	"github.com/aacebo/jsonschema/coerce"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/object#additionalproperties
@@ -33,66 +36,139 @@ func additionalProperties(key string) Keyword {
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			if !value.IsValid() || value.Kind() != reflect.Map {
+			if !value.IsValid() || (value.Kind() != reflect.Map && value.Kind() != reflect.Struct) {
 				return errs
 			}
 
+			config = coerce.Map(config)
 			properties := reflect.Indirect(reflect.ValueOf(ctx.Schema["properties"]))
 			patternProperties := reflect.Indirect(reflect.ValueOf(ctx.Schema["patternProperties"]))
-			iter := value.MapRange()
 
-			for iter.Next() {
-				_key := iter.Key()
-				_value := iter.Value()
+			switch value.Kind() {
+			case reflect.Map:
+				iter := value.MapRange()
 
-				if properties.IsValid() {
-					if properties.MapIndex(_key).IsValid() && !properties.MapIndex(_key).IsZero() {
-						continue
-					}
-				}
+				for iter.Next() {
+					_key := iter.Key()
+					_value := iter.Value()
 
-				if patternProperties.IsValid() {
-					_iter := patternProperties.MapRange()
-					_match := false
-
-					for _iter.Next() {
-						expr := regexp.MustCompile(_iter.Key().String())
-						_match = expr.MatchString(_key.String())
-
-						if _match {
-							break
+					if properties.IsValid() {
+						if properties.MapIndex(_key).IsValid() && !properties.MapIndex(_key).IsZero() {
+							continue
 						}
 					}
 
-					if _match {
-						continue
+					if patternProperties.IsValid() {
+						_iter := patternProperties.MapRange()
+						_match := false
+
+						for _iter.Next() {
+							expr := regexp.MustCompile(_iter.Key().String())
+							_match = expr.MatchString(_key.String())
+
+							if _match {
+								break
+							}
+						}
+
+						if _match {
+							continue
+						}
+					}
+
+					switch config.Kind() {
+					case reflect.Bool:
+						if !config.Bool() {
+							errs = append(errs, SchemaError{
+								Path:    fmt.Sprintf("%s/%s", ctx.Path, _key.String()),
+								Keyword: key,
+								Message: "too many properties",
+							})
+						}
+
+						break
+					case reflect.Map:
+						_errs := ns.validate(
+							ctx.ID,
+							fmt.Sprintf("%s/%s", ctx.Path, _key.String()),
+							config.Interface().(map[string]any),
+							_value.Interface(),
+						)
+
+						if len(_errs) > 0 {
+							errs = append(errs, _errs...)
+						}
+
+						break
 					}
 				}
+			case reflect.Struct:
+				for i := 0; i < value.NumField(); i++ {
+					field := value.Field(i)
+					_type := value.Type().Field(i)
+					name := _type.Name
 
-				switch config.Kind() {
-				case reflect.Bool:
-					if !config.Bool() {
-						errs = append(errs, SchemaError{
-							Path:    fmt.Sprintf("%s/%s", ctx.Path, _key.String()),
-							Keyword: key,
-							Message: "too many properties",
-						})
+					if tag := _type.Tag.Get("json"); tag != "" {
+						parts := strings.Split(tag, ",")
+
+						if len(parts) > 0 {
+							if parts[0] == "-" {
+								continue
+							} else {
+								name = parts[0]
+							}
+						}
 					}
 
-					break
-				case reflect.Map:
-					_errs := ns.validate(
-						ctx.ID,
-						fmt.Sprintf("%s/%s", ctx.Path, _key.String()),
-						config.Interface().(map[string]any),
-						_value.Interface(),
-					)
-
-					if len(_errs) > 0 {
-						errs = append(errs, _errs...)
+					if properties.IsValid() {
+						if properties.MapIndex(reflect.ValueOf(name)).IsValid() && !properties.MapIndex(reflect.ValueOf(name)).IsZero() {
+							continue
+						}
 					}
 
-					break
+					if patternProperties.IsValid() {
+						_iter := patternProperties.MapRange()
+						_match := false
+
+						for _iter.Next() {
+							expr := regexp.MustCompile(_iter.Key().String())
+							_match = expr.MatchString(name)
+
+							if _match {
+								break
+							}
+						}
+
+						if _match {
+							continue
+						}
+					}
+
+					switch config.Kind() {
+					case reflect.Bool:
+						if !config.Bool() {
+							errs = append(errs, SchemaError{
+								Path:    fmt.Sprintf("%s/%s", ctx.Path, name),
+								Keyword: key,
+								Message: "too many properties",
+							})
+						}
+
+						break
+					case reflect.Map:
+						_errs := ns.validate(
+							ctx.ID,
+							fmt.Sprintf("%s/%s", ctx.Path, name),
+							config.Interface().(map[string]any),
+							field.Interface(),
+						)
+
+						if len(_errs) > 0 {
+							errs = append(errs, _errs...)
+						}
+
+						break
+					}
 				}
 			}
 

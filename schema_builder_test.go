@@ -30,6 +30,59 @@ func TestSchemaBuilder(t *testing.T) {
 		})
 	})
 
+	t.Run("all_of", func(t *testing.T) {
+		t.Run("should succeed", func(t *testing.T) {
+			schema := jsonschema.Builder().
+				AllOf(
+					jsonschema.Builder().
+						Object().
+						Properties(map[string]jsonschema.Schema{
+							"test": jsonschema.Builder().String().Build(),
+						}).
+						AdditionalProperties(jsonschema.Builder().Integer().Build()).
+						Required("test").
+						Build(),
+				).Build()
+
+			errs := jsonschema.Compile(schema)
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+
+			errs = jsonschema.Validate(schema, struct {
+				Test  string `json:"test"`
+				Other int    `json:"other"`
+			}{"test", 1})
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+		})
+	})
+
+	t.Run("string", func(t *testing.T) {
+		t.Run("should succeed with length", func(t *testing.T) {
+			schema := jsonschema.Builder().
+				String().
+				MinLength(5).
+				MaxLength(5).
+				Build()
+
+			errs := jsonschema.Compile(schema)
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+
+			errs = jsonschema.Validate(schema, "test!")
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+		})
+	})
+
 	t.Run("integer", func(t *testing.T) {
 		t.Run("should succeed", func(t *testing.T) {
 			schema := jsonschema.Builder().
@@ -52,13 +105,13 @@ func TestSchemaBuilder(t *testing.T) {
 	})
 
 	t.Run("struct", func(t *testing.T) {
-		t.Run("should succeed", func(t *testing.T) {
+		t.Run("should succeed with properties", func(t *testing.T) {
 			schema := jsonschema.Builder().
 				Object().
 				Properties(map[string]jsonschema.Schema{
 					"test": jsonschema.Builder().String().Build(),
 				}).
-				AdditionalProperties(jsonschema.Builder().Number().Build()).
+				AdditionalProperties(jsonschema.Builder().Integer().Build()).
 				Required("test").
 				Build()
 
@@ -70,8 +123,8 @@ func TestSchemaBuilder(t *testing.T) {
 
 			errs = jsonschema.Validate(schema, struct {
 				Test  string `json:"test"`
-				Other string `json:"other"`
-			}{"test", "1"})
+				Other int    `json:"other"`
+			}{"test", 1})
 
 			if len(errs) > 0 {
 				t.Error(errs)

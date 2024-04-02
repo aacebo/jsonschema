@@ -3,6 +3,8 @@ package jsonschema
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/aacebo/jsonschema/coerce"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/combining#allOf
@@ -22,8 +24,14 @@ func allOf(key string) Keyword {
 			}
 
 			for i := 0; i < config.Len(); i++ {
-				index := config.Index(i).Elem()
+				index := config.Index(i)
 				path := fmt.Sprintf("%s/%s/%d", ctx.Path, key, i)
+
+				if index.Kind() == reflect.Interface || index.Kind() == reflect.Pointer {
+					index = index.Elem()
+				}
+
+				index = coerce.Map(index)
 
 				if index.Kind() != reflect.Map {
 					errs = append(errs, SchemaError{
@@ -56,7 +64,13 @@ func allOf(key string) Keyword {
 			}
 
 			for i := 0; i < config.Len(); i++ {
-				index := config.Index(i).Elem()
+				index := config.Index(i)
+
+				if index.Kind() == reflect.Interface || index.Kind() == reflect.Pointer {
+					index = index.Elem()
+				}
+
+				index = coerce.Map(index)
 
 				if index.Kind() != reflect.Map {
 					continue

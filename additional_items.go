@@ -38,7 +38,7 @@ func additionalItems(key string) Keyword {
 
 			items := reflect.Indirect(reflect.ValueOf(ctx.Schema["items"]))
 
-			if !items.IsValid() || items.Kind() != reflect.Slice {
+			if !items.IsValid() || (items.Kind() != reflect.Slice && items.Kind() != reflect.Array) {
 				return errs
 			}
 
@@ -65,6 +65,22 @@ func additionalItems(key string) Keyword {
 						fmt.Sprintf("%s/%d", ctx.Path, i),
 						config.Interface().(map[string]any),
 						index.Interface(),
+					)
+
+					if len(_errs) > 0 {
+						errs = append(errs, _errs...)
+					}
+				}
+
+				break
+			case reflect.Struct:
+				for i := items.Len(); i < value.NumField(); i++ {
+					field := value.Field(i)
+					_errs := ns.validate(
+						ctx.ID,
+						fmt.Sprintf("%s/%d", ctx.Path, i),
+						config.Interface().(map[string]any),
+						field.Interface(),
 					)
 
 					if len(_errs) > 0 {
