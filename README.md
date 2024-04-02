@@ -76,7 +76,7 @@ jsonschema.AddKeyword("alphaNum", jsonschema.Keyword{ ... })
 
 ```go
 jsonschema.AddFormat("lowercase", func(input string) error {
-    if strings.ToLower(input) == input {
+    if strings.ToLower(input) != input {
         return errors.New("must be lowercase")
     }
 
