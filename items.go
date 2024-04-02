@@ -97,17 +97,12 @@ func items(key string) Keyword {
 				break
 			case reflect.Slice:
 				for i := 0; i < config.Len(); i++ {
-					index := config.Index(i)
+					index := coerce.Map(config.Index(i))
 
 					if i > value.Len()-1 {
 						break
 					}
 
-					if index.Kind() == reflect.Interface || index.Kind() == reflect.Pointer {
-						index = index.Elem()
-					}
-
-					index = coerce.Map(index)
 					_errs := ns.validate(
 						ctx.ID,
 						fmt.Sprintf("%s/%d", ctx.Path, i),
