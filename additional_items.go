@@ -3,6 +3,8 @@ package jsonschema
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/aacebo/jsonschema/coerce"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/array#additionalitems
@@ -45,6 +47,8 @@ func additionalItems(key string) Keyword {
 			if value.Len() <= items.Len() {
 				return errs
 			}
+
+			config = coerce.Map(config)
 
 			switch config.Kind() {
 			case reflect.Bool:

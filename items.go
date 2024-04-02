@@ -3,6 +3,8 @@ package jsonschema
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/aacebo/jsonschema/coerce"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/array#items
@@ -14,14 +16,24 @@ func items(key string) Keyword {
 
 			switch config.Kind() {
 			case reflect.Map:
+				config = coerce.Map(config)
+
 				return ns.compile(
 					ctx.ID,
 					fmt.Sprintf("%s/%s", ctx.Path, key),
 					config.Interface().(map[string]any),
 				)
+			case reflect.Array:
+				fallthrough
 			case reflect.Slice:
 				for i := 0; i < config.Len(); i++ {
-					index := config.Index(i).Elem()
+					index := config.Index(i)
+
+					if index.Kind() == reflect.Interface || index.Kind() == reflect.Pointer {
+						index = index.Elem()
+					}
+
+					index = coerce.Map(index)
 
 					if index.Kind() != reflect.Map {
 						errs = append(errs, SchemaError{
@@ -83,12 +95,17 @@ func items(key string) Keyword {
 				break
 			case reflect.Slice:
 				for i := 0; i < config.Len(); i++ {
-					index := config.Index(i).Elem()
+					index := config.Index(i)
 
 					if i > value.Len()-1 {
 						break
 					}
 
+					if index.Kind() == reflect.Interface || index.Kind() == reflect.Pointer {
+						index = index.Elem()
+					}
+
+					index = coerce.Map(index)
 					_errs := ns.validate(
 						ctx.ID,
 						fmt.Sprintf("%s/%d", ctx.Path, i),

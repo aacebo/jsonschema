@@ -132,6 +132,28 @@ func TestSchemaBuilder(t *testing.T) {
 		})
 	})
 
+	t.Run("array", func(t *testing.T) {
+		t.Run("should succeed with items", func(t *testing.T) {
+			schema := jsonschema.Builder().
+				Array().
+				TupleItems(jsonschema.Builder().String().Build()).
+				AdditionalItems(jsonschema.Builder().Integer().Build()).
+				Build()
+
+			errs := jsonschema.Compile(schema)
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+
+			errs = jsonschema.Validate(schema, []any{"test", 1})
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+		})
+	})
+
 	t.Run("custom", func(t *testing.T) {
 		jsonschema.AddKeyword("test", jsonschema.Keyword{
 			Compile: func(ns *jsonschema.Namespace, ctx jsonschema.Context, config reflect.Value) []jsonschema.SchemaError {
@@ -166,7 +188,7 @@ func TestSchemaBuilder(t *testing.T) {
 			},
 		})
 
-		t.Run("should succed", func(t *testing.T) {
+		t.Run("should succeed", func(t *testing.T) {
 			schema := jsonschema.Builder().
 				String().
 				Build()
