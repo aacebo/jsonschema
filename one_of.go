@@ -3,6 +3,8 @@ package jsonschema
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/aacebo/jsonschema/coerce"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/combining#oneOf
@@ -50,7 +52,7 @@ func oneOf(key string) Keyword {
 			valid := 0
 
 			for i := 0; i < config.Len(); i++ {
-				index := config.Index(i).Elem()
+				index := coerce.Map(config.Index(i))
 
 				if index.Kind() != reflect.Map {
 					continue

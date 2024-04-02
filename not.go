@@ -18,7 +18,11 @@ func not(key string) Keyword {
 				return errs
 			}
 
-			return ns.compile(ctx.ID, ctx.Path, config.Interface().(map[string]any))
+			return ns.compile(
+				ctx.ID,
+				ctx.Path,
+				config.Interface().(map[string]any),
+			)
 		},
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
