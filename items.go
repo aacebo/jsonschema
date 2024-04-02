@@ -10,7 +10,7 @@ import (
 // https://json-schema.org/understanding-json-schema/reference/array#items
 func items(key string) Keyword {
 	return Keyword{
-		Default: map[string]any{},
+		Default: Schema{},
 		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
@@ -72,9 +72,11 @@ func items(key string) Keyword {
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			if !value.IsValid() || value.Kind() != reflect.Slice {
+			if !value.IsValid() || (value.Kind() != reflect.Slice && value.Kind() != reflect.Array) {
 				return errs
 			}
+
+			config = coerce.Map(config)
 
 			switch config.Kind() {
 			case reflect.Map:

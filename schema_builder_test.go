@@ -130,6 +130,56 @@ func TestSchemaBuilder(t *testing.T) {
 				t.Error(errs)
 			}
 		})
+
+		t.Run("should succeed with patternProperties", func(t *testing.T) {
+			schema := jsonschema.Builder().
+				Object().
+				PatternProperties(map[string]jsonschema.Schema{
+					"^S_": jsonschema.Builder().String().Build(),
+					"^I_": jsonschema.Builder().Integer().Build(),
+				}).
+				AdditionalProperties(jsonschema.Builder().Number().Build()).
+				Build()
+
+			errs := jsonschema.Compile(schema)
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+
+			errs = jsonschema.Validate(schema, struct {
+				One   string  `json:"S_one"`
+				Two   int     `json:"I_two"`
+				Three float64 `json:"I_three"`
+			}{"test", 1, 10.0})
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+		})
+
+		t.Run("should succeed with propertyNames", func(t *testing.T) {
+			schema := jsonschema.Builder().
+				Object().
+				PropertyNames(jsonschema.Builder().Pattern("^S_").Build()).
+				Build()
+
+			errs := jsonschema.Compile(schema)
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+
+			errs = jsonschema.Validate(schema, struct {
+				One   string  `json:"S_one"`
+				Two   int     `json:"S_two"`
+				Three float64 `json:"S_three"`
+			}{"test", 1, 10.0})
+
+			if len(errs) > 0 {
+				t.Error(errs)
+			}
+		})
 	})
 
 	t.Run("array", func(t *testing.T) {
@@ -138,6 +188,8 @@ func TestSchemaBuilder(t *testing.T) {
 				Array().
 				TupleItems(jsonschema.Builder().String().Build()).
 				AdditionalItems(jsonschema.Builder().Integer().Build()).
+				MinItems(1).
+				MaxItems(2).
 				Build()
 
 			errs := jsonschema.Compile(schema)

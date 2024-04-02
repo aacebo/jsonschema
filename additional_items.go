@@ -10,7 +10,7 @@ import (
 // https://json-schema.org/understanding-json-schema/reference/array#additionalitems
 func additionalItems(key string) Keyword {
 	return Keyword{
-		Default: map[string]any{},
+		Default: Schema{},
 		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
@@ -34,7 +34,7 @@ func additionalItems(key string) Keyword {
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			if !value.IsValid() || value.Kind() != reflect.Slice {
+			if !value.IsValid() || (value.Kind() != reflect.Slice && value.Kind() != reflect.Array) {
 				return errs
 			}
 
@@ -69,22 +69,6 @@ func additionalItems(key string) Keyword {
 						fmt.Sprintf("%s/%d", ctx.Path, i),
 						config.Interface().(map[string]any),
 						index.Interface(),
-					)
-
-					if len(_errs) > 0 {
-						errs = append(errs, _errs...)
-					}
-				}
-
-				break
-			case reflect.Struct:
-				for i := items.Len(); i < value.NumField(); i++ {
-					field := value.Field(i)
-					_errs := ns.validate(
-						ctx.ID,
-						fmt.Sprintf("%s/%d", ctx.Path, i),
-						config.Interface().(map[string]any),
-						field.Interface(),
 					)
 
 					if len(_errs) > 0 {

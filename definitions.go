@@ -10,7 +10,7 @@ import (
 // https://json-schema.org/understanding-json-schema/structuring#defs
 func definitions(key string) Keyword {
 	return Keyword{
-		Default: map[string]any{},
+		Default: Schema{},
 		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 

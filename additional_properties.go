@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
-	"strings"
 
 	"github.com/aacebo/jsonschema/coerce"
 )
@@ -12,7 +11,7 @@ import (
 // https://json-schema.org/understanding-json-schema/reference/object#additionalproperties
 func additionalProperties(key string) Keyword {
 	return Keyword{
-		Default: map[string]any{},
+		Default: Schema{},
 		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
@@ -105,20 +104,7 @@ func additionalProperties(key string) Keyword {
 			case reflect.Struct:
 				for i := 0; i < value.NumField(); i++ {
 					field := value.Field(i)
-					_type := value.Type().Field(i)
-					name := _type.Name
-
-					if tag := _type.Tag.Get("json"); tag != "" {
-						parts := strings.Split(tag, ",")
-
-						if len(parts) > 0 {
-							if parts[0] == "-" {
-								continue
-							} else {
-								name = parts[0]
-							}
-						}
-					}
+					name := coerce.StructFieldName(value.Type().Field(i))
 
 					if properties.IsValid() {
 						if properties.MapIndex(reflect.ValueOf(name)).IsValid() && !properties.MapIndex(reflect.ValueOf(name)).IsZero() {

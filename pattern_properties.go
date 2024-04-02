@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+
+	"github.com/aacebo/jsonschema/coerce"
 )
 
 // https://json-schema.org/understanding-json-schema/reference/object#patternProperties
 func patternProperties(key string) Keyword {
 	return Keyword{
-		Default: map[string]any{},
+		Default: Schema{},
 		Compile: func(ns *Namespace, ctx Context, config reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
@@ -30,6 +32,12 @@ func patternProperties(key string) Keyword {
 				value := reflect.Indirect(iter.Value())
 				path := fmt.Sprintf("%s/%s/%s", ctx.Path, key, _key.String())
 				_, err := regexp.Compile(_key.String())
+
+				if value.Kind() == reflect.Pointer || value.Kind() == reflect.Interface {
+					value = value.Elem()
+				}
+
+				value = coerce.Map(value)
 
 				if err != nil {
 					errs = append(errs, SchemaError{
@@ -71,7 +79,7 @@ func patternProperties(key string) Keyword {
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			if !value.IsValid() || value.Kind() != reflect.Map {
+			if !value.IsValid() || (value.Kind() != reflect.Map && value.Kind() != reflect.Struct) {
 				return errs
 			}
 
@@ -87,6 +95,8 @@ func patternProperties(key string) Keyword {
 					_schema = _schema.Elem()
 				}
 
+				_schema = coerce.Map(_schema)
+
 				if _schema.Kind() != reflect.Map {
 					errs = append(errs, SchemaError{
 						Path:    path,
@@ -97,19 +107,41 @@ func patternProperties(key string) Keyword {
 					continue
 				}
 
-				_iter := value.MapRange()
+				if value.Kind() == reflect.Map {
+					_iter := value.MapRange()
 
-				for _iter.Next() {
-					if expr.MatchString(_iter.Key().String()) {
-						_errs := ns.validate(
-							ctx.ID,
-							path,
-							_schema.Interface().(map[string]any),
-							_iter.Value().Interface(),
-						)
+					for _iter.Next() {
+						if expr.MatchString(_iter.Key().String()) {
+							_errs := ns.validate(
+								ctx.ID,
+								path,
+								_schema.Interface().(map[string]any),
+								_iter.Value().Interface(),
+							)
 
-						if len(_errs) > 0 {
-							errs = append(errs, _errs...)
+							if len(_errs) > 0 {
+								errs = append(errs, _errs...)
+							}
+						}
+					}
+				}
+
+				if value.Kind() == reflect.Struct {
+					for i := 0; i < value.NumField(); i++ {
+						field := value.Field(i)
+						name := coerce.StructFieldName(value.Type().Field(i))
+
+						if expr.MatchString(name) {
+							_errs := ns.validate(
+								ctx.ID,
+								path,
+								_schema.Interface().(map[string]any),
+								field.Interface(),
+							)
+
+							if len(_errs) > 0 {
+								errs = append(errs, _errs...)
+							}
 						}
 					}
 				}

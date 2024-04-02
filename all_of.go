@@ -59,7 +59,7 @@ func allOf(key string) Keyword {
 		Validate: func(ns *Namespace, ctx Context, config reflect.Value, value reflect.Value) []SchemaError {
 			errs := []SchemaError{}
 
-			if config.Kind() != reflect.Slice {
+			if config.Kind() != reflect.Slice && config.Kind() != reflect.Array {
 				return errs
 			}
 
