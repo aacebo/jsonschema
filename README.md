@@ -10,6 +10,12 @@ a zero dependency jsonschema implementation
 
 ## Usage
 
+### CLI
+
+```bash
+$: jsonschema **/*
+```
+
 ### Files
 
 ```go
@@ -78,11 +84,14 @@ jsonschema.AddFormat("lowercase", func(input string) error {
 })
 ```
 
-## CLI
+## Formats
 
-```bash
-$: jsonschema **/*
-```
+- date-time
+- email
+- ipv4
+- ipv6
+- uri
+- uuid
 
 ## Supported Drafts
 
